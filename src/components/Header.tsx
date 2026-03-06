@@ -1,4 +1,4 @@
-import { ShoppingCart, Sparkles, User, LogOut, Package, Heart, Search, Bot, Trophy, Zap, Menu, X, Crown } from 'lucide-react';
+import { ShoppingCart, Sparkles, User, LogOut, Package, Heart, Search, Bot, Trophy, Zap, Menu, X, Crown, ChevronDown } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
@@ -22,6 +22,40 @@ interface HeaderProps {
   onProductionClick?: () => void;
   onBuyCreditsClick?: () => void;
   searchQuery?: string;
+}
+
+function MoreMenu({ onRanksClick, onHallOfFameClick, onProductionClick }: { onRanksClick?: () => void; onHallOfFameClick?: () => void; onProductionClick?: () => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(p => !p)}
+        className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm"
+      >
+        More <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute top-full right-0 mt-2 w-48 bg-[#111]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
+            {[
+              { label: 'Ranks & Rewards', icon: <Crown className="w-4 h-4 text-amber-400" />, onClick: onRanksClick },
+              { label: 'Hall of Fame', icon: <Trophy className="w-4 h-4 text-amber-500" />, onClick: onHallOfFameClick },
+              { label: 'Live Feed', icon: <Zap className="w-4 h-4 text-blue-400" />, onClick: onProductionClick },
+            ].map(item => (
+              <button
+                key={item.label}
+                onClick={() => { setOpen(false); item.onClick?.(); }}
+                className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+              >
+                {item.icon}{item.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onHallOfFameClick, onRanksClick, onEconomicsClick, onProductionClick, onBuyCreditsClick, searchQuery = '' }: HeaderProps) {
@@ -69,7 +103,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
           </div>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-5">
             <a href="#gallery" className="text-gray-300 hover:text-white transition-colors text-sm">Gallery</a>
             <button onClick={onAgentsClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
               <Bot className="w-4 h-4" />Agents
@@ -80,15 +114,15 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
             <button onClick={onContestClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
               <Trophy className="w-4 h-4 text-amber-400" />Contest
             </button>
-            <button onClick={onRanksClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Crown className="w-4 h-4 text-amber-400" />Ranks & Rewards
+            <button onClick={onEconomicsClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
+              <Zap className="w-4 h-4 text-green-400" />Credit Economy
             </button>
-            <button onClick={onHallOfFameClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Trophy className="w-4 h-4 text-amber-500" />Hall of Fame
-            </button>
-            <button onClick={onProductionClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Zap className="w-4 h-4 text-blue-400" />Live Feed
-            </button>
+            {/* More dropdown */}
+            <MoreMenu
+              onRanksClick={onRanksClick}
+              onHallOfFameClick={onHallOfFameClick}
+              onProductionClick={onProductionClick}
+            />
           </nav>
 
           {/* Right icons */}
