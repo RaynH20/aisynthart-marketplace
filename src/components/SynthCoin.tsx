@@ -1,67 +1,76 @@
-// SynthCoin — AISynthArt's credit token
-// Flat regular hexagon + exact Lucide Sparkles paths from the logo
+import React from 'react';
 
 interface SynthCoinProps {
   size?: number;
   className?: string;
+  animated?: boolean; // idle float animation
+  spin?: boolean;     // purchase/hover spin
 }
 
-export function SynthCoin({ size = 20, className = '' }: SynthCoinProps) {
+// The SynthCoin component — uses the 3D rendered coin image
+// Falls back to the SVG hex design if image fails to load
+export function SynthCoin({ size = 20, className = '', animated = false, spin = false }: SynthCoinProps) {
+  const [imgError, setImgError] = React.useState(false);
+
+  const animClass = spin
+    ? 'animate-spin'
+    : animated
+    ? 'synthcoin-float'
+    : '';
+
+  if (imgError) {
+    // Fallback SVG hex coin
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`inline-block flex-shrink-0 ${animClass} ${className}`}
+        style={{ verticalAlign: 'middle' }}
+      >
+        <defs>
+          <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#9D4EDD" />
+            <stop offset="100%" stopColor="#FF006E" />
+          </linearGradient>
+        </defs>
+        <polygon points="12,1.5 20.66,6.25 20.66,17.75 12,22.5 3.34,17.75 3.34,6.25" fill="url(#coinGrad)" />
+        <g transform="translate(12,12) scale(0.45)">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="white" opacity="0.9" />
+        </g>
+      </svg>
+    );
+  }
+
   return (
-    <svg
+    <img
+      src="/synthcoin-3d.png"
+      alt="SynthCoin"
       width={size}
       height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={`inline-block flex-shrink-0 align-middle ${className}`}
-    >
-      <defs>
-        <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#a855f7" />
-          <stop offset="100%" stopColor="#ec4899" />
-        </linearGradient>
-      </defs>
-
-      {/* Regular flat-top hexagon — equal width & height */}
-      <polygon
-        points="12,1.5 20.66,6.25 20.66,17.75 12,22.5 3.34,17.75 3.34,6.25"
-        fill="url(#hexGrad)"
-      />
-
-      {/* Exact Lucide Sparkles path, scaled to fit inside hex (scale 0.45, translate to center) */}
-      <g transform="translate(12,12) scale(0.45) translate(-12,-12)">
-        {/* Main star */}
-        <path
-          d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
-          fill="white"
-          opacity="0.95"
-        />
-        {/* Top-left tick marks */}
-        <path d="M5 3v4" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-        <path d="M3 5h4" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-        {/* Bottom-right tick marks */}
-        <path d="M19 17v4" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-        <path d="M17 19h4" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-      </g>
-    </svg>
+      onError={() => setImgError(true)}
+      className={`inline-block flex-shrink-0 ${animClass} ${className}`}
+      style={{ verticalAlign: 'middle', objectFit: 'contain' }}
+    />
   );
 }
 
-// Inline credit display helper
-export function CreditAmount({
-  amount,
-  className = '',
-  size = 20,
-}: {
-  amount: number | string;
-  className?: string;
+// Displays a credit amount with the coin icon
+interface CreditAmountProps {
+  amount: number;
   size?: number;
-}) {
+  className?: string;
+  showSign?: boolean;
+  animate?: boolean;
+}
+
+export function CreditAmount({ amount, size = 18, className = '', showSign = false, animate = false }: CreditAmountProps) {
   return (
-    <span className={`inline-flex items-center gap-1.5 font-semibold ${className}`}>
-      <SynthCoin size={size} />
-      <span>{typeof amount === 'number' ? amount.toLocaleString() : amount}</span>
+    <span className={`inline-flex items-center gap-1 ${className}`}>
+      <SynthCoin size={size} animated={animate} />
+      <span>{showSign && amount > 0 ? '+' : ''}{amount.toLocaleString()}</span>
     </span>
   );
 }

@@ -45,3 +45,30 @@ html {
   background: rgba(168, 85, 247, 0.4);
   color: white;
 }
+
+/* SynthCoin float animation */
+@keyframes synthcoin-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 0 6px #9D4EDD88); }
+  50% { transform: translateY(-3px) rotate(2deg); filter: drop-shadow(0 0 12px #FF006E88); }
+}
+.synthcoin-float {
+  animation: synthcoin-float 3s ease-in-out infinite;
+}
+
+/* Coin rain animation */
+@keyframes coin-rain {
+  0% { transform: translateY(-20px) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(120px) rotate(720deg) scale(0.3); opacity: 0; }
+}
+.coin-rain {
+  animation: coin-rain 1s ease-in forwards;
+}
+
+/* Balance bounce */
+@keyframes balance-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+.balance-bounce {
+  animation: balance-bounce 0.3s ease-in-out;
+}
