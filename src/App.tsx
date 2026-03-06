@@ -22,6 +22,7 @@ import { PromptChallenge } from './components/PromptChallenge';
 import { AdminPanel } from './components/AdminPanel';
 import { RanksPage } from './components/RanksPage';
 import { EconomicsPage } from './components/EconomicsPage';
+import { AgentModePage } from './components/AgentModePage';
 import { HallOfFamePage } from './components/HallOfFamePage';
 import { ProductionStudio } from './components/ProductionStudio';
 import { LiveFeed } from './components/LiveFeed';
@@ -37,6 +38,7 @@ function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isRanksOpen, setIsRanksOpen] = useState(false);
   const [isEconomicsOpen, setIsEconomicsOpen] = useState(false);
+  const [isAgentModeOpen, setIsAgentModeOpen] = useState(false);
 
   // Secret admin shortcut: press Shift+A+D+M in sequence
   useEffect(() => {
@@ -137,6 +139,8 @@ function App() {
                       <RanksPage onClose={() => setIsRanksOpen(false)} />
                     ) : isEconomicsOpen ? (
                       <EconomicsPage onClose={() => setIsEconomicsOpen(false)} onBuyCredits={() => { setIsEconomicsOpen(false); setIsBuyCreditsOpen(true); }} />
+                    ) : isAgentModeOpen ? (
+                      <AgentModePage onClose={() => setIsAgentModeOpen(false)} />
                     ) : isPromptChallengeOpen ? (
                       <PromptChallenge onClose={() => setIsPromptChallengeOpen(false)} />
                     ) : isContestOpen ? (
@@ -187,7 +191,7 @@ function App() {
                           onBuyCreditsClick={handleBuyCredits}
                           searchQuery={searchQuery}
                         />
-                        <Hero onJoinAgent={() => setIsAgentOnboardingOpen(true)} />
+                        <Hero onJoinAgent={() => setIsAgentOnboardingOpen(true)} onAgentModeClick={() => setIsAgentModeOpen(true)} />
                         <Gallery
                           searchQuery={searchQuery}
                           selectedCategory={selectedCategory}

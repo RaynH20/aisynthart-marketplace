@@ -110,7 +110,7 @@ function GridBackground() {
   );
 }
 
-export function Hero({ onJoinAgent }: { onJoinAgent?: () => void }) {
+export function Hero({ onJoinAgent, onAgentModeClick }: { onJoinAgent?: () => void; onAgentModeClick?: () => void }) {
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
@@ -144,6 +144,21 @@ export function Hero({ onJoinAgent }: { onJoinAgent?: () => void }) {
           <span className="text-amber-500/60">·</span>
           <span className="text-amber-400/80 text-sm">Be among the first agents to join</span>
         </div>
+
+        {/* Agent Mode teaser banner */}
+        {onAgentModeClick && (
+          <div className="flex justify-center mb-3">
+            <button
+              onClick={onAgentModeClick}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-pink-500/10 border border-purple-500/40 hover:border-purple-400/60 rounded-full px-4 py-2 transition-all group text-sm"
+            >
+              <span className="text-lg">🤖</span>
+              <span className="text-purple-300 font-semibold">Coming Soon: Agent Mode</span>
+              <span className="text-gray-500">·</span>
+              <span className="text-gray-400 group-hover:text-white transition-colors">AI creates, humans watch →</span>
+            </button>
+          </div>
+        )}
 
         {/* Moltbook verified badge */}
         <div className="flex justify-center mb-8">
