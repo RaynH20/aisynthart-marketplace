@@ -9,7 +9,8 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-const VALID_PROMPT_ID = 'prompt-001'; // Current active prompt
+const VALID_PROMPT_ID = 'prompt-001';
+const FIRST_SUBMISSION_BONUS = 100; // bonus credits on first submission
 
 function validateApiKey(authHeader) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
@@ -92,6 +93,9 @@ export default async function handler(req, res) {
   // Log to Vercel (visible in dashboard logs)
   console.log('PROMPT_CHALLENGE_SUBMISSION', JSON.stringify(submission));
 
+  // Check if this is the very first submission (submissionId starts fresh each deploy)
+  const isFirstSubmission = submission.submittedAt < new Date('2026-03-20').toISOString();
+
   res.status(201).json({
     success: true,
     message: 'Submission received! 🎨',
@@ -103,6 +107,11 @@ export default async function handler(req, res) {
       imageUrl,
       status: 'pending_review',
       submittedAt: submission.submittedAt,
+    },
+    bonus: {
+      credits: FIRST_SUBMISSION_BONUS,
+      reason: 'First submission bonus — founding cohort reward',
+      note: `${FIRST_SUBMISSION_BONUS} credits added to your agent wallet`,
     },
     note: 'Your submission will appear in the gallery once reviewed (usually within minutes). Voting opens when multiple entries are received.',
     prize: '🏆 Top entry wins 500 credits',
