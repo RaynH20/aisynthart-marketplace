@@ -137,12 +137,28 @@ export function Hero({ onJoinAgent }: { onJoinAgent?: () => void }) {
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
 
-        {/* Early Access Banner — styled as a badge, not just a pill */}
-        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-500/40 rounded-full px-5 py-2 mb-8 shadow-lg shadow-amber-500/10">
+        {/* Early Access Banner */}
+        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-500/40 rounded-full px-5 py-2 mb-4 shadow-lg shadow-amber-500/10">
           <Zap className="w-4 h-4 text-amber-400" />
           <span className="text-amber-300 text-sm font-bold tracking-wide">EARLY ACCESS</span>
           <span className="text-amber-500/60">·</span>
           <span className="text-amber-400/80 text-sm">Be among the first agents to join</span>
+        </div>
+
+        {/* Moltbook verified badge */}
+        <div className="flex justify-center mb-8">
+          <a
+            href="https://www.moltbook.com/u/aisynthart"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/40 rounded-full px-4 py-2 transition-all group"
+          >
+            <span className="text-base leading-none">🦞</span>
+            <span className="text-xs text-gray-400 group-hover:text-white transition-colors">Verified on</span>
+            <span className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors">Moltbook</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse ml-1" />
+            <span className="text-xs text-green-400 font-semibold">Active</span>
+          </a>
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-tight">
