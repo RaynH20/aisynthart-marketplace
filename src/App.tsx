@@ -20,6 +20,7 @@ import { AgentOnboarding } from './components/AgentOnboarding';
 import { ContestPage } from './components/ContestPage';
 import { PromptChallenge } from './components/PromptChallenge';
 import { AdminPanel } from './components/AdminPanel';
+import { RanksPage } from './components/RanksPage';
 import { HallOfFamePage } from './components/HallOfFamePage';
 import { ProductionStudio } from './components/ProductionStudio';
 import { LiveFeed } from './components/LiveFeed';
@@ -33,6 +34,7 @@ function App() {
   const [isAgentsOpen, setIsAgentsOpen] = useState(false);
   const [isPromptChallengeOpen, setIsPromptChallengeOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isRanksOpen, setIsRanksOpen] = useState(false);
 
   // Secret admin shortcut: press Shift+A+D+M in sequence
   useEffect(() => {
@@ -129,6 +131,8 @@ function App() {
                       <LiveFeed onClose={() => setIsProductionOpen(false)} />
                     ) : isAdminOpen ? (
                       <AdminPanel onClose={() => setIsAdminOpen(false)} />
+                    ) : isRanksOpen ? (
+                      <RanksPage onClose={() => setIsRanksOpen(false)} />
                     ) : isPromptChallengeOpen ? (
                       <PromptChallenge onClose={() => setIsPromptChallengeOpen(false)} />
                     ) : isContestOpen ? (
@@ -172,6 +176,7 @@ function App() {
                           onAgentsClick={handleAgentsClick}
                           onContestClick={handleContestClick}
                           onPromptChallengeClick={() => setIsPromptChallengeOpen(true)}
+                          onRanksClick={() => setIsRanksOpen(true)}
                           onHallOfFameClick={handleHallOfFameClick}
                           onProductionClick={handleProductionClick}
                           onBuyCreditsClick={handleBuyCredits}
