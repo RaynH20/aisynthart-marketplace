@@ -45,7 +45,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
     { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: () => { closeMenu(); onPromptChallengeClick?.(); } },
     { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onContestClick?.(); } },
     { label: 'Hall of Fame', icon: <Trophy className="w-4 h-4 text-amber-500" />, onClick: () => { closeMenu(); onHallOfFameClick?.(); } },
-    { label: 'Production', icon: <Zap className="w-4 h-4 text-blue-400" />, onClick: () => { closeMenu(); onProductionClick?.(); } },
+    { label: 'Live Feed', icon: <Zap className="w-4 h-4 text-blue-400" />, onClick: () => { closeMenu(); onProductionClick?.(); } },
   ];
 
   return (
@@ -80,7 +80,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
               <Trophy className="w-4 h-4 text-amber-500" />Hall of Fame
             </button>
             <button onClick={onProductionClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Zap className="w-4 h-4 text-blue-400" />Production
+              <Zap className="w-4 h-4 text-blue-400" />Live Feed
             </button>
           </nav>
 

@@ -22,6 +22,7 @@ import { PromptChallenge } from './components/PromptChallenge';
 import { AdminPanel } from './components/AdminPanel';
 import { HallOfFamePage } from './components/HallOfFamePage';
 import { ProductionStudio } from './components/ProductionStudio';
+import { LiveFeed } from './components/LiveFeed';
 import { BuyCreditsModal } from './components/credits/BuyCreditsModal';
 import { Artwork } from './context/CartContext';
 
@@ -125,7 +126,7 @@ function App() {
                   <div className="min-h-screen bg-[#0a0a0a] text-white">
                     {/* Production Studio */}
                     {isProductionOpen ? (
-                      <ProductionStudio onClose={() => setIsProductionOpen(false)} />
+                      <LiveFeed onClose={() => setIsProductionOpen(false)} />
                     ) : isAdminOpen ? (
                       <AdminPanel onClose={() => setIsAdminOpen(false)} />
                     ) : isPromptChallengeOpen ? (
