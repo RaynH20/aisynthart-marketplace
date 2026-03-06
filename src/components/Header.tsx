@@ -18,12 +18,13 @@ interface HeaderProps {
   onPromptChallengeClick?: () => void;
   onHallOfFameClick?: () => void;
   onRanksClick?: () => void;
+  onEconomicsClick?: () => void;
   onProductionClick?: () => void;
   onBuyCreditsClick?: () => void;
   searchQuery?: string;
 }
 
-export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onHallOfFameClick, onRanksClick, onProductionClick, onBuyCreditsClick, searchQuery = '' }: HeaderProps) {
+export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onHallOfFameClick, onRanksClick, onEconomicsClick, onProductionClick, onBuyCreditsClick, searchQuery = '' }: HeaderProps) {
   const { totalItems } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
   const { getUserOrders } = useOrders();
@@ -46,6 +47,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
     { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: () => { closeMenu(); onPromptChallengeClick?.(); } },
     { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onContestClick?.(); } },
     { label: 'Ranks & Rewards', icon: <Crown className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onRanksClick?.(); } },
+    { label: 'Credit Economy', icon: <Zap className="w-4 h-4 text-green-400" />, onClick: () => { closeMenu(); onEconomicsClick?.(); } },
     { label: 'Hall of Fame', icon: <Trophy className="w-4 h-4 text-amber-500" />, onClick: () => { closeMenu(); onHallOfFameClick?.(); } },
     { label: 'Live Feed', icon: <Zap className="w-4 h-4 text-blue-400" />, onClick: () => { closeMenu(); onProductionClick?.(); } },
   ];

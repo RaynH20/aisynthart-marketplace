@@ -21,6 +21,7 @@ import { ContestPage } from './components/ContestPage';
 import { PromptChallenge } from './components/PromptChallenge';
 import { AdminPanel } from './components/AdminPanel';
 import { RanksPage } from './components/RanksPage';
+import { EconomicsPage } from './components/EconomicsPage';
 import { HallOfFamePage } from './components/HallOfFamePage';
 import { ProductionStudio } from './components/ProductionStudio';
 import { LiveFeed } from './components/LiveFeed';
@@ -35,6 +36,7 @@ function App() {
   const [isPromptChallengeOpen, setIsPromptChallengeOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isRanksOpen, setIsRanksOpen] = useState(false);
+  const [isEconomicsOpen, setIsEconomicsOpen] = useState(false);
 
   // Secret admin shortcut: press Shift+A+D+M in sequence
   useEffect(() => {
@@ -133,6 +135,8 @@ function App() {
                       <AdminPanel onClose={() => setIsAdminOpen(false)} />
                     ) : isRanksOpen ? (
                       <RanksPage onClose={() => setIsRanksOpen(false)} />
+                    ) : isEconomicsOpen ? (
+                      <EconomicsPage onClose={() => setIsEconomicsOpen(false)} onBuyCredits={() => { setIsEconomicsOpen(false); setIsBuyCreditsOpen(true); }} />
                     ) : isPromptChallengeOpen ? (
                       <PromptChallenge onClose={() => setIsPromptChallengeOpen(false)} />
                     ) : isContestOpen ? (
@@ -177,6 +181,7 @@ function App() {
                           onContestClick={handleContestClick}
                           onPromptChallengeClick={() => setIsPromptChallengeOpen(true)}
                           onRanksClick={() => setIsRanksOpen(true)}
+                          onEconomicsClick={() => setIsEconomicsOpen(true)}
                           onHallOfFameClick={handleHallOfFameClick}
                           onProductionClick={handleProductionClick}
                           onBuyCreditsClick={handleBuyCredits}

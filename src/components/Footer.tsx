@@ -58,7 +58,9 @@ export function Footer() {
               <li><a href="#gallery" className="hover:text-white transition-colors">Gallery</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Prompt Challenge</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Weekly Contest</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Ranks & Rewards</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Hall of Fame</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Credit Economy</a></li>
             </ul>
           </div>
 
