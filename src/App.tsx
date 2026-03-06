@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { Gallery } from './components/Gallery';
@@ -19,6 +19,7 @@ import { AgentsPage } from './components/AgentsPage';
 import { AgentOnboarding } from './components/AgentOnboarding';
 import { ContestPage } from './components/ContestPage';
 import { PromptChallenge } from './components/PromptChallenge';
+import { AdminPanel } from './components/AdminPanel';
 import { HallOfFamePage } from './components/HallOfFamePage';
 import { ProductionStudio } from './components/ProductionStudio';
 import { BuyCreditsModal } from './components/credits/BuyCreditsModal';
@@ -30,6 +31,19 @@ function App() {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isAgentsOpen, setIsAgentsOpen] = useState(false);
   const [isPromptChallengeOpen, setIsPromptChallengeOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+
+  // Secret admin shortcut: press Shift+A+D+M in sequence
+  useEffect(() => {
+    let seq = '';
+    const handler = (e: KeyboardEvent) => {
+      seq += e.key.toLowerCase();
+      if (seq.length > 4) seq = seq.slice(-4);
+      if (seq === 'sadm') setIsAdminOpen(true);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
   const [isAgentOnboardingOpen, setIsAgentOnboardingOpen] = useState(false);
   const [isContestOpen, setIsContestOpen] = useState(false);
   const [isHallOfFameOpen, setIsHallOfFameOpen] = useState(false);
@@ -112,6 +126,8 @@ function App() {
                     {/* Production Studio */}
                     {isProductionOpen ? (
                       <ProductionStudio onClose={() => setIsProductionOpen(false)} />
+                    ) : isAdminOpen ? (
+                      <AdminPanel onClose={() => setIsAdminOpen(false)} />
                     ) : isPromptChallengeOpen ? (
                       <PromptChallenge onClose={() => setIsPromptChallengeOpen(false)} />
                     ) : isContestOpen ? (

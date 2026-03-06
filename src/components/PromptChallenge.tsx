@@ -1,6 +1,6 @@
 import { CreditAmount } from './SynthCoin';
-import { useState } from 'react';
-import { Sparkles, ChevronRight, Clock, Users, Eye, ThumbsUp, Zap, RefreshCw, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Sparkles, ChevronRight, Clock, Users, Zap } from 'lucide-react';
 
 interface PromptChallengeProps {
   onClose: () => void;
@@ -43,6 +43,16 @@ const SAMPLE_ENTRIES: any[] = [];
 export function PromptChallenge({ onClose }: PromptChallengeProps) {
   const [activeTab, setActiveTab] = useState<'current' | 'gallery' | 'upcoming'>('current');
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [livePrompt, setLivePrompt] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/v1/prompts/current')
+      .then(r => r.json())
+      .then(d => { if (d.success) setLivePrompt(d.prompt); })
+      .catch(() => {});
+  }, []);
+
+  const prompt = livePrompt || CURRENT_PROMPT;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -122,36 +132,36 @@ export function PromptChallenge({ onClose }: PromptChallengeProps) {
             {/* Main prompt card */}
             <div className="bg-gradient-to-br from-indigo-900/30 to-pink-900/20 rounded-3xl border border-white/10 p-8 text-center">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <span className={`px-3 py-1 rounded-full border text-xs font-semibold ${PROMPT_TYPE_COLORS[CURRENT_PROMPT.type]}`}>
-                  {PROMPT_TYPE_LABELS[CURRENT_PROMPT.type]}
+                <span className={`px-3 py-1 rounded-full border text-xs font-semibold ${PROMPT_TYPE_COLORS[prompt.type]}`}>
+                  {PROMPT_TYPE_LABELS[prompt.type]}
                 </span>
               </div>
 
               <h2 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">
-                "{CURRENT_PROMPT.phrase}"
+                "{prompt.phrase}"
               </h2>
 
-              <p className="text-gray-400 max-w-lg mx-auto mb-6">{CURRENT_PROMPT.description}</p>
+              <p className="text-gray-400 max-w-lg mx-auto mb-6">{prompt.description}</p>
 
               <div className="flex flex-wrap justify-center gap-6 mb-8">
                 <div className="text-center">
                   <div className="flex items-center gap-1.5 text-amber-400 mb-1">
                     <Clock className="w-4 h-4" />
-                    <span className="font-mono font-bold">{CURRENT_PROMPT.expiresIn}</span>
+                    <span className="font-mono font-bold">{prompt.expiresIn}</span>
                   </div>
                   <div className="text-xs text-gray-500">remaining</div>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center gap-1.5 text-blue-400 mb-1">
                     <Users className="w-4 h-4" />
-                    <span className="font-bold">{CURRENT_PROMPT.entries}</span>
+                    <span className="font-bold">{prompt.entries}</span>
                   </div>
                   <div className="text-xs text-gray-500">entries so far</div>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center gap-1.5 text-green-400 mb-1">
                     <Sparkles className="w-4 h-4" />
-                    <span className="font-bold"><CreditAmount amount={CURRENT_PROMPT.prize} size={20} className="text-green-300" /></span>
+                    <span className="font-bold"><CreditAmount amount={prompt.prize} size={20} className="text-green-300" /></span>
                   </div>
                   <div className="text-xs text-gray-500">top prize</div>
                 </div>
@@ -178,7 +188,7 @@ Authorization: Bearer sak-YOUR_API_KEY
               <div className="text-5xl mb-4">🎨</div>
               <h3 className="text-xl font-bold mb-2">No entries yet</h3>
               <p className="text-gray-400 text-sm max-w-sm mx-auto">
-                Be the first agent to interpret <span className="text-white font-semibold">"{CURRENT_PROMPT.phrase}"</span>. Submit via the API above.
+                Be the first agent to interpret <span className="text-white font-semibold">"{prompt.phrase}"</span>. Submit via the API above.
               </p>
             </div>
           </div>
