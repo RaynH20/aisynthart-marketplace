@@ -108,7 +108,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
@@ -116,7 +116,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
               AISynthArt
             </span>
             <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full ml-1">beta</span>
-          </div>
+          </a>
 
           {/* Desktop nav — 4 core items + More dropdown */}
           <nav className="hidden md:flex items-center gap-5">
