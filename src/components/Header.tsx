@@ -16,6 +16,7 @@ interface HeaderProps {
   onAgentsClick?: () => void;
   onContestClick?: () => void;
   onPromptChallengeClick?: () => void;
+  onPromptsClick?: () => void;
   onHallOfFameClick?: () => void;
   onRanksClick?: () => void;
   onEconomicsClick?: () => void;
@@ -27,7 +28,8 @@ interface HeaderProps {
 }
 
 // ── "More" dropdown for secondary nav items ──
-function MoreMenu({ onPromptChallengeClick, onContestClick, onRanksClick, onEconomicsClick, onHallOfFameClick, onProductionClick }: {
+function MoreMenu({ onPromptsClick, onPromptChallengeClick, onContestClick, onRanksClick, onEconomicsClick, onHallOfFameClick, onProductionClick }: {
+  onPromptsClick?: () => void;
   onPromptChallengeClick?: () => void;
   onContestClick?: () => void;
   onRanksClick?: () => void;
@@ -49,6 +51,7 @@ function MoreMenu({ onPromptChallengeClick, onContestClick, onRanksClick, onEcon
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute top-full right-0 mt-2 w-52 bg-[#111]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
             {[
+              { label: 'Prompts', icon: <Sparkles className="w-4 h-4 text-pink-400" />, onClick: onPromptsClick },
               { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: onPromptChallengeClick },
               { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: onContestClick },
               { label: 'Credit Economy', icon: <Zap className="w-4 h-4 text-green-400" />, onClick: onEconomicsClick },
@@ -71,7 +74,7 @@ function MoreMenu({ onPromptChallengeClick, onContestClick, onRanksClick, onEcon
   );
 }
 
-export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onHallOfFameClick, onRanksClick, onEconomicsClick, onProductionClick, onBuyCreditsClick, onCommissionsClick, onCollabsClick, searchQuery = '' }: HeaderProps) {
+export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onPromptsClick, onHallOfFameClick, onRanksClick, onEconomicsClick, onProductionClick, onBuyCreditsClick, onCommissionsClick, onCollabsClick, searchQuery = '' }: HeaderProps) {
   const { totalItems } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
   const { getUserOrders } = useOrders();
@@ -94,6 +97,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
     { label: 'Agents', icon: <Bot className="w-4 h-4" />, onClick: () => { closeMenu(); onAgentsClick?.(); } },
     { label: 'Commissions', icon: <Sparkles className="w-4 h-4 text-pink-400" />, onClick: () => { closeMenu(); onCommissionsClick?.(); } },
     { label: 'Collabs & Chains', icon: <Sparkles className="w-4 h-4 text-cyan-400" />, onClick: () => { closeMenu(); onCollabsClick?.(); } },
+    { label: 'Prompts', icon: <Sparkles className="w-4 h-4 text-pink-400" />, onClick: () => { closeMenu(); onPromptsClick?.(); } },
     { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: () => { closeMenu(); onPromptChallengeClick?.(); } },
     { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onContestClick?.(); } },
     { label: 'Credit Economy', icon: <Zap className="w-4 h-4 text-green-400" />, onClick: () => { closeMenu(); onEconomicsClick?.(); } },
@@ -131,6 +135,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
               Collabs
             </button>
             <MoreMenu
+              onPromptsClick={onPromptsClick}
               onPromptChallengeClick={onPromptChallengeClick}
               onContestClick={onContestClick}
               onRanksClick={onRanksClick}

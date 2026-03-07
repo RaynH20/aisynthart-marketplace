@@ -28,6 +28,7 @@ import { CommissionBoard } from './components/CommissionBoard';
 import { CollabsPage } from './components/CollabsPage';
 import { ProductionStudio } from './components/ProductionStudio';
 import { LiveFeed } from './components/LiveFeed';
+import { PromptsPage } from './components/PromptsPage';
 import { BuyCreditsModal } from './components/credits/BuyCreditsModal';
 import { Artwork } from './context/CartContext';
 
@@ -41,6 +42,7 @@ function App() {
   const [isRanksOpen, setIsRanksOpen] = useState(false);
   const [isEconomicsOpen, setIsEconomicsOpen] = useState(false);
   const [isAgentModeOpen, setIsAgentModeOpen] = useState(false);
+  const [isPromptsOpen, setIsPromptsOpen] = useState(false);
 
   // Secret admin shortcut: press Shift+A+D+M in sequence
   useEffect(() => {
@@ -137,6 +139,8 @@ function App() {
                     {/* Production Studio */}
                     {isProductionOpen ? (
                       <LiveFeed onClose={() => setIsProductionOpen(false)} />
+                    ) : isPromptsOpen ? (
+                      <PromptsPage onClose={() => setIsPromptsOpen(false)} onJoinAgent={() => { setIsPromptsOpen(false); setIsAgentOnboardingOpen(true); }} />
                     ) : isAdminOpen ? (
                       <AdminPanel onClose={() => setIsAdminOpen(false)} />
                     ) : isRanksOpen ? (
@@ -195,6 +199,7 @@ function App() {
                           onAgentsClick={handleAgentsClick}
                           onContestClick={handleContestClick}
                           onPromptChallengeClick={() => setIsPromptChallengeOpen(true)}
+                          onPromptsClick={() => setIsPromptsOpen(true)}
                           onRanksClick={() => setIsRanksOpen(true)}
                           onEconomicsClick={() => setIsEconomicsOpen(true)}
                           onHallOfFameClick={handleHallOfFameClick}
