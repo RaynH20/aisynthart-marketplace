@@ -26,7 +26,15 @@ interface HeaderProps {
   searchQuery?: string;
 }
 
-function MoreMenu({ onRanksClick, onHallOfFameClick, onProductionClick }: { onRanksClick?: () => void; onHallOfFameClick?: () => void; onProductionClick?: () => void }) {
+// ── "More" dropdown for secondary nav items ──
+function MoreMenu({ onPromptChallengeClick, onContestClick, onRanksClick, onEconomicsClick, onHallOfFameClick, onProductionClick }: {
+  onPromptChallengeClick?: () => void;
+  onContestClick?: () => void;
+  onRanksClick?: () => void;
+  onEconomicsClick?: () => void;
+  onHallOfFameClick?: () => void;
+  onProductionClick?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -39,8 +47,11 @@ function MoreMenu({ onRanksClick, onHallOfFameClick, onProductionClick }: { onRa
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full right-0 mt-2 w-48 bg-[#111]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
+          <div className="absolute top-full right-0 mt-2 w-52 bg-[#111]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
             {[
+              { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: onPromptChallengeClick },
+              { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: onContestClick },
+              { label: 'Credit Economy', icon: <Zap className="w-4 h-4 text-green-400" />, onClick: onEconomicsClick },
               { label: 'Ranks & Rewards', icon: <Crown className="w-4 h-4 text-amber-400" />, onClick: onRanksClick },
               { label: 'Hall of Fame', icon: <Trophy className="w-4 h-4 text-amber-500" />, onClick: onHallOfFameClick },
               { label: 'Live Feed', icon: <Zap className="w-4 h-4 text-blue-400" />, onClick: onProductionClick },
@@ -77,6 +88,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
 
   const closeMenu = () => setMobileMenuOpen(false);
 
+  // All nav items for mobile menu
   const navItems = [
     { label: 'Gallery', icon: null, href: '#gallery', onClick: () => { closeMenu(); } },
     { label: 'Agents', icon: <Bot className="w-4 h-4" />, onClick: () => { closeMenu(); onAgentsClick?.(); } },
@@ -84,8 +96,8 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
     { label: 'Collabs & Chains', icon: <Sparkles className="w-4 h-4 text-cyan-400" />, onClick: () => { closeMenu(); onCollabsClick?.(); } },
     { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: () => { closeMenu(); onPromptChallengeClick?.(); } },
     { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onContestClick?.(); } },
-    { label: 'Ranks & Rewards', icon: <Crown className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onRanksClick?.(); } },
     { label: 'Credit Economy', icon: <Zap className="w-4 h-4 text-green-400" />, onClick: () => { closeMenu(); onEconomicsClick?.(); } },
+    { label: 'Ranks & Rewards', icon: <Crown className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onRanksClick?.(); } },
     { label: 'Hall of Fame', icon: <Trophy className="w-4 h-4 text-amber-500" />, onClick: () => { closeMenu(); onHallOfFameClick?.(); } },
     { label: 'Live Feed', icon: <Zap className="w-4 h-4 text-blue-400" />, onClick: () => { closeMenu(); onProductionClick?.(); } },
   ];
@@ -106,30 +118,23 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
             <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full ml-1">beta</span>
           </div>
 
-          {/* Desktop nav */}
+          {/* Desktop nav — 4 core items + More dropdown */}
           <nav className="hidden md:flex items-center gap-5">
             <a href="#gallery" className="text-gray-300 hover:text-white transition-colors text-sm">Gallery</a>
             <button onClick={onAgentsClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
               <Bot className="w-4 h-4" />Agents
             </button>
             <button onClick={onCommissionsClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Sparkles className="w-4 h-4 text-pink-400" />Commissions
+              Commissions
             </button>
             <button onClick={onCollabsClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Sparkles className="w-4 h-4 text-cyan-400" />Collabs
+              Collabs
             </button>
-            <button onClick={onPromptChallengeClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Sparkles className="w-4 h-4 text-indigo-400" />Prompt Challenge
-            </button>
-            <button onClick={onContestClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Trophy className="w-4 h-4 text-amber-400" />Contest
-            </button>
-            <button onClick={onEconomicsClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
-              <Zap className="w-4 h-4 text-green-400" />Credit Economy
-            </button>
-            {/* More dropdown */}
             <MoreMenu
+              onPromptChallengeClick={onPromptChallengeClick}
+              onContestClick={onContestClick}
               onRanksClick={onRanksClick}
+              onEconomicsClick={onEconomicsClick}
               onHallOfFameClick={onHallOfFameClick}
               onProductionClick={onProductionClick}
             />
@@ -209,7 +214,6 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
       {/* Mobile full-screen menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#0f0f0f] border-t border-white/10 overflow-y-auto max-h-[calc(100vh-64px)]">
-          {/* Mobile search */}
           <div className="px-4 pt-4 pb-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -223,7 +227,6 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
             </div>
           </div>
 
-          {/* Credits on mobile */}
           <div className="px-4 py-2">
             <div onClick={() => { closeMenu(); onBuyCreditsClick?.(); }}
               className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-3 cursor-pointer hover:bg-white/10 transition-colors">
@@ -232,7 +235,6 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
             </div>
           </div>
 
-          {/* Nav items */}
           <nav className="px-4 py-2 space-y-1">
             {navItems.map((item) => (
               item.href ? (
@@ -250,7 +252,6 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
               )
             ))}
 
-            {/* Categories accordion */}
             <button onClick={() => setShowCategoriesMobile(!showCategoriesMobile)}
               className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-gray-200 hover:bg-white/10 transition-colors text-base font-medium">
               <span>Categories</span>
@@ -268,7 +269,6 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
             )}
           </nav>
 
-          {/* Auth on mobile */}
           <div className="px-4 pt-2 pb-6 border-t border-white/10 mt-2">
             {isAuthenticated ? (
               <div className="space-y-2">
@@ -276,7 +276,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
                   <User className="w-5 h-5 text-purple-400" />
                   <div>
                     <div className="font-medium text-sm">{user?.name}</div>
-                    <div className="text-xs text-gray-500">{userOrders.length} orders</div>
+                    <div className="text-xs text-gray-500">{user?.email}</div>
                   </div>
                 </div>
                 <button onClick={() => { logout(); closeMenu(); }}
@@ -286,7 +286,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
               </div>
             ) : (
               <button onClick={() => { onAuthClick(); closeMenu(); }}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 py-3 rounded-xl font-semibold text-white">
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity">
                 Sign In
               </button>
             )}
