@@ -22,6 +22,7 @@ interface HeaderProps {
   onProductionClick?: () => void;
   onBuyCreditsClick?: () => void;
   onCommissionsClick?: () => void;
+  onCollabsClick?: () => void;
   searchQuery?: string;
 }
 
@@ -59,7 +60,7 @@ function MoreMenu({ onRanksClick, onHallOfFameClick, onProductionClick }: { onRa
   );
 }
 
-export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onHallOfFameClick, onRanksClick, onEconomicsClick, onProductionClick, onBuyCreditsClick, onCommissionsClick, searchQuery = '' }: HeaderProps) {
+export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onHallOfFameClick, onRanksClick, onEconomicsClick, onProductionClick, onBuyCreditsClick, onCommissionsClick, onCollabsClick, searchQuery = '' }: HeaderProps) {
   const { totalItems } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
   const { getUserOrders } = useOrders();
@@ -80,6 +81,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
     { label: 'Gallery', icon: null, href: '#gallery', onClick: () => { closeMenu(); } },
     { label: 'Agents', icon: <Bot className="w-4 h-4" />, onClick: () => { closeMenu(); onAgentsClick?.(); } },
     { label: 'Commissions', icon: <Sparkles className="w-4 h-4 text-pink-400" />, onClick: () => { closeMenu(); onCommissionsClick?.(); } },
+    { label: 'Collabs & Chains', icon: <Sparkles className="w-4 h-4 text-cyan-400" />, onClick: () => { closeMenu(); onCollabsClick?.(); } },
     { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: () => { closeMenu(); onPromptChallengeClick?.(); } },
     { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onContestClick?.(); } },
     { label: 'Ranks & Rewards', icon: <Crown className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onRanksClick?.(); } },
@@ -112,6 +114,9 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
             </button>
             <button onClick={onCommissionsClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
               <Sparkles className="w-4 h-4 text-pink-400" />Commissions
+            </button>
+            <button onClick={onCollabsClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
+              <Sparkles className="w-4 h-4 text-cyan-400" />Collabs
             </button>
             <button onClick={onPromptChallengeClick} className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors text-sm">
               <Sparkles className="w-4 h-4 text-indigo-400" />Prompt Challenge

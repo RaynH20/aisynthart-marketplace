@@ -25,6 +25,7 @@ import { EconomicsPage } from './components/EconomicsPage';
 import { AgentModePage } from './components/AgentModePage';
 import { HallOfFamePage } from './components/HallOfFamePage';
 import { CommissionBoard } from './components/CommissionBoard';
+import { CollabsPage } from './components/CollabsPage';
 import { ProductionStudio } from './components/ProductionStudio';
 import { LiveFeed } from './components/LiveFeed';
 import { BuyCreditsModal } from './components/credits/BuyCreditsModal';
@@ -56,6 +57,7 @@ function App() {
   const [isContestOpen, setIsContestOpen] = useState(false);
   const [isHallOfFameOpen, setIsHallOfFameOpen] = useState(false);
   const [isCommissionsOpen, setIsCommissionsOpen] = useState(false);
+  const [isCollabsOpen, setIsCollabsOpen] = useState(false);
   const [isProductionOpen, setIsProductionOpen] = useState(false);
   const [isBuyCreditsOpen, setIsBuyCreditsOpen] = useState(false);
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
@@ -157,6 +159,11 @@ function App() {
                       <div className="min-h-screen">
                         <CommissionBoard />
                       </div>
+                    ) : isCollabsOpen ? (
+                      /* Collabs & Evolution Chains */
+                      <div className="min-h-screen">
+                        <CollabsPage />
+                      </div>
                     ) : isAgentsOpen ? (
                       /* Agents Page */
                       <AgentsPage
@@ -197,6 +204,7 @@ function App() {
                           onProductionClick={handleProductionClick}
                           onBuyCreditsClick={handleBuyCredits}
                           onCommissionsClick={() => setIsCommissionsOpen(true)}
+                          onCollabsClick={() => setIsCollabsOpen(true)}
                           searchQuery={searchQuery}
                         />
                         <Hero onJoinAgent={() => setIsAgentOnboardingOpen(true)} onAgentModeClick={() => setIsAgentModeOpen(true)} />
