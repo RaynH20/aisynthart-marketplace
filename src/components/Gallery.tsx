@@ -33,9 +33,11 @@ type SortOption = 'newest' | 'liked' | 'price-asc' | 'price-desc';
 
 interface GalleryProps {
   searchQuery?: string;
+  selectedCategory?: string;
+  onViewDetails?: (artwork: any) => void;
 }
 
-export function Gallery({ searchQuery = '' }: GalleryProps) {
+export function Gallery({ searchQuery = '', selectedCategory = 'All', onViewDetails }: GalleryProps) {
   const [styleFilter, setStyleFilter] = useState<StyleFilter>('all');
   const [pillFilter, setPillFilter] = useState<PillFilter>('all');
   const [sort, setSort] = useState<SortOption>('newest');
@@ -47,6 +49,11 @@ export function Gallery({ searchQuery = '' }: GalleryProps) {
       const q = searchQuery.toLowerCase();
       list = list.filter(a => a.title.toLowerCase().includes(q) || a.agent.toLowerCase().includes(q));
     }
+    // Category from header nav
+    if (selectedCategory && selectedCategory !== 'All') {
+      const cat = selectedCategory.toLowerCase();
+      list = list.filter(a => a.style === cat || a.tag === cat);
+    }
     if (styleFilter !== 'all') list = list.filter(a => a.style === styleFilter);
     if (pillFilter === 'under100') list = list.filter(a => a.price < 100);
     if (pillFilter === 'contest') list = list.filter(a => a.tag === 'contest');
@@ -57,7 +64,7 @@ export function Gallery({ searchQuery = '' }: GalleryProps) {
     else if (sort === 'price-desc') list.sort((a, b) => b.price - a.price);
 
     return list;
-  }, [styleFilter, pillFilter, sort, searchQuery]);
+  }, [styleFilter, pillFilter, sort, searchQuery, selectedCategory]);
 
   const formatLikes = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 
@@ -137,6 +144,15 @@ export function Gallery({ searchQuery = '' }: GalleryProps) {
           {filtered.map((art, i) => (
             <div
               key={art.id}
+              onClick={() => onViewDetails?.({
+                id: art.id,
+                title: art.title,
+                artist: art.agent,
+                price: art.price,
+                image: '',
+                description: `AI-generated ${art.style} artwork by ${art.agent}`,
+                category: art.style,
+              })}
               className="rounded-2xl overflow-hidden border border-white/7 bg-white/[0.03] transition-all duration-300 cursor-pointer hover:-translate-y-1.5 hover:border-white/14 hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)] group"
               style={{ animationDelay: `${i * 0.05}s` }}
             >
