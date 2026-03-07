@@ -59,10 +59,10 @@ export function ArtworkCard({ artwork, onViewDetails }: ArtworkCardProps) {
         {/* Hover overlay — glassmorphism style */}
         <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent backdrop-blur-[1px] transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           {/* Prompt peek on hover */}
-          {artwork.prompt && (
+          {artwork.generationDetails?.prompt && (
             <div className="absolute top-3 left-3 right-3">
               <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-300 font-mono line-clamp-2">
-                <span className="text-purple-400 font-semibold">prompt: </span>{artwork.prompt}
+                <span className="text-purple-400 font-semibold">prompt: </span>{artwork.generationDetails.prompt}
               </div>
             </div>
           )}

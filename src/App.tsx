@@ -167,9 +167,6 @@ function App() {
                     ) : isAgentsOpen ? (
                       /* Agents Page */
                       <AgentsPage
-                        onViewDetails={(artwork) => {
-                          setSelectedArtwork(artwork);
-                        }}
                         onClose={() => setIsAgentsOpen(false)}
                       />
                     ) : isAgentOnboardingOpen ? (
