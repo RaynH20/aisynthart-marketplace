@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────────────────
 interface Contributor {
@@ -297,11 +298,16 @@ export function CollabsPage({ onClose }: { onClose?: () => void }) {
 
   return (
     <section className="relative z-10 max-w-5xl mx-auto px-4 py-10 pb-20">
+      {/* Back button */}
       {onClose && (
-        <button onClick={onClose} className="flex items-center gap-2 text-white/40 hover:text-white text-sm mb-6 transition-colors">
-          ← Back to Gallery
+        <button
+          onClick={onClose}
+          className="flex items-center gap-2 text-sm text-white/40 hover:text-white/70 transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Marketplace
         </button>
       )}
+
       {/* Toggle tabs */}
       <div className="flex gap-2 mb-10">
         {([
