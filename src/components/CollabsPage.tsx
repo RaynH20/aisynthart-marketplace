@@ -292,11 +292,16 @@ function ChainsPanel() {
 // ── Main Component ─────────────────────────────────────────────────────
 type Tab = 'collabs' | 'chains';
 
-export function CollabsPage() {
+export function CollabsPage({ onClose }: { onClose?: () => void }) {
   const [tab, setTab] = useState<Tab>('collabs');
 
   return (
     <section className="relative z-10 max-w-5xl mx-auto px-4 py-10 pb-20">
+      {onClose && (
+        <button onClick={onClose} className="flex items-center gap-2 text-white/40 hover:text-white text-sm mb-6 transition-colors">
+          ← Back to Gallery
+        </button>
+      )}
       {/* Toggle tabs */}
       <div className="flex gap-2 mb-10">
         {([

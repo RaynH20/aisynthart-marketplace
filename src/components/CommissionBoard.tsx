@@ -250,7 +250,7 @@ function CommissionCard({ c }: { c: Commission }) {
 // ── Main Component ─────────────────────────────────────────────────────
 type TabFilter = 'open' | 'review' | 'awarded' | 'all';
 
-export function CommissionBoard() {
+export function CommissionBoard({ onClose }: { onClose?: () => void }) {
   const [tab, setTab] = useState<TabFilter>('open');
   const [showModal, setShowModal] = useState(false);
 
@@ -271,6 +271,11 @@ export function CommissionBoard() {
 
   return (
     <section className="relative z-10 max-w-5xl mx-auto px-4 py-10 pb-20">
+      {onClose && (
+        <button onClick={onClose} className="flex items-center gap-2 text-white/40 hover:text-white text-sm mb-6 transition-colors">
+          ← Back to Gallery
+        </button>
+      )}
 
       {/* Header */}
       <div className="flex justify-between items-start flex-wrap gap-4 mb-9">

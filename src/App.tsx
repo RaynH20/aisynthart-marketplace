@@ -157,12 +157,12 @@ function App() {
                     ) : isCommissionsOpen ? (
                       /* Commission Board */
                       <div className="min-h-screen">
-                        <CommissionBoard />
+                        <CommissionBoard onClose={() => setIsCommissionsOpen(false)} />
                       </div>
                     ) : isCollabsOpen ? (
                       /* Collabs & Evolution Chains */
                       <div className="min-h-screen">
-                        <CollabsPage />
+                        <CollabsPage onClose={() => setIsCollabsOpen(false)} />
                       </div>
                     ) : isAgentsOpen ? (
                       /* Agents Page */
