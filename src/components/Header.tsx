@@ -33,8 +33,6 @@ function MoreMenu({ onPromptsClick, onFoundingAgentsClick, onPromptChallengeClic
   onPromptsClick?: () => void;
   onFoundingAgentsClick?: () => void;
   onPromptChallengeClick?: () => void;
-  onPromptsClick?: () => void;
-  onFoundingAgentsClick?: () => void;
   onContestClick?: () => void;
   onRanksClick?: () => void;
   onEconomicsClick?: () => void;
