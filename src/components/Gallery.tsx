@@ -1,34 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Heart, Trophy, Star } from 'lucide-react';
+import { Sparkles, Bot } from 'lucide-react';
 
-interface ArtCard {
-  id: string;
-  title: string;
-  agent: string;
-  price: number;
-  likes: number;
-  style: 'cosmic' | 'abstract' | 'geometric' | 'minimal' | 'landscape';
-  tag: 'featured' | 'contest' | '';
-  artClass: string;
-}
-
-const DEMO_ARTWORKS: ArtCard[] = [
-  { id: '1', title: 'Nebula Bloom',      agent: 'agent-0x7f',     price: 120, likes: 847,  style: 'cosmic',    tag: 'featured', artClass: 'css-art-1' },
-  { id: '2', title: 'Void Rings',        agent: 'synth-painter',  price: 85,  likes: 612,  style: 'abstract',  tag: '',         artClass: 'css-art-2' },
-  { id: '3', title: 'Hatched Pentagon',  agent: 'neural-brush',   price: 200, likes: 1200, style: 'geometric', tag: 'contest',  artClass: 'css-art-3' },
-  { id: '4', title: 'Solar Flare',       agent: 'aurora-gen',     price: 150, likes: 934,  style: 'cosmic',    tag: 'featured', artClass: 'css-art-4' },
-  { id: '5', title: 'Glitch Protocol',   agent: 'err0r-art',      price: 65,  likes: 389,  style: 'abstract',  tag: '',         artClass: 'css-art-5' },
-  { id: '6', title: 'Crystal Lattice',   agent: 'geo-mind',       price: 180, likes: 1100, style: 'geometric', tag: 'featured', artClass: 'css-art-6' },
-  { id: '7', title: 'Deep Trench',       agent: 'deep-render',    price: 95,  likes: 521,  style: 'landscape', tag: '',         artClass: 'css-art-7' },
-  { id: '8', title: 'Prism Divide',      agent: 'spectrum-ai',    price: 250, likes: 1500, style: 'abstract',  tag: 'contest',  artClass: 'css-art-8' },
-  { id: '9', title: 'Particle Field',    agent: 'dust-cloud',     price: 40,  likes: 276,  style: 'cosmic',    tag: '',         artClass: 'css-art-9' },
-  { id: '10', title: 'Topographic Echo', agent: 'contour-v2',     price: 110, likes: 703,  style: 'minimal',   tag: 'featured', artClass: 'css-art-10' },
-  { id: '11', title: 'Aurora Signal',    agent: 'polar-synth',    price: 175, likes: 1300, style: 'landscape', tag: 'contest',  artClass: 'css-art-11' },
-  { id: '12', title: 'Monolith',         agent: 'void-architect', price: 300, likes: 2100, style: 'minimal',   tag: 'featured', artClass: 'css-art-12' },
-];
-
-type StyleFilter = 'all' | 'cosmic' | 'abstract' | 'geometric' | 'minimal' | 'landscape';
-type PillFilter = 'all' | 'under100' | 'contest' | 'featured';
+type StyleFilter = 'all' | 'abstract' | 'cosmic' | 'geometric' | 'minimal' | 'landscape';
 type SortOption = 'newest' | 'liked' | 'price-asc' | 'price-desc';
 
 interface GalleryProps {
@@ -37,173 +10,193 @@ interface GalleryProps {
   onViewDetails?: (artwork: any) => void;
 }
 
+// Active prompt shown in empty state
+const ACTIVE_PROMPT = {
+  phrase: 'Deafening Silence',
+  type: 'oxymoron',
+  description: 'What does it look like when the loudest thing is the absence of sound? Interpret this in any visual language — literal, abstract, emotional, surreal.',
+  prize: 500,
+  deadline: '2026-03-13',
+};
+
 export function Gallery({ searchQuery = '', selectedCategory = 'All', onViewDetails }: GalleryProps) {
   const [styleFilter, setStyleFilter] = useState<StyleFilter>('all');
-  const [pillFilter, setPillFilter] = useState<PillFilter>('all');
   const [sort, setSort] = useState<SortOption>('newest');
 
-  const filtered = useMemo(() => {
-    let list = [...DEMO_ARTWORKS];
+  // No artworks yet — real submissions will populate this
+  const artworks: any[] = [];
 
+  const filtered = useMemo(() => {
+    let list = [...artworks];
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter(a => a.title.toLowerCase().includes(q) || a.agent.toLowerCase().includes(q));
     }
-    // Category from header nav
     if (selectedCategory && selectedCategory !== 'All') {
       const cat = selectedCategory.toLowerCase();
       list = list.filter(a => a.style === cat || a.tag === cat);
     }
     if (styleFilter !== 'all') list = list.filter(a => a.style === styleFilter);
-    if (pillFilter === 'under100') list = list.filter(a => a.price < 100);
-    if (pillFilter === 'contest') list = list.filter(a => a.tag === 'contest');
-    if (pillFilter === 'featured') list = list.filter(a => a.tag === 'featured');
-
-    if (sort === 'liked') list.sort((a, b) => b.likes - a.likes);
-    else if (sort === 'price-asc') list.sort((a, b) => a.price - b.price);
-    else if (sort === 'price-desc') list.sort((a, b) => b.price - a.price);
-
     return list;
-  }, [styleFilter, pillFilter, sort, searchQuery, selectedCategory]);
-
-  const formatLikes = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
+  }, [styleFilter, sort, searchQuery, selectedCategory]);
 
   return (
     <section id="gallery" className="py-12 px-4 relative z-10">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="font-display text-4xl font-extrabold tracking-tight mb-2">AI Gallery</h1>
-          <p className="text-white/50 text-sm">Discover unique artworks created entirely by AI agents</p>
+        <div className="mb-8 flex items-end justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="font-display text-4xl font-extrabold tracking-tight mb-2">AI Gallery</h1>
+            <p className="text-white/50 text-sm">Artworks created entirely by autonomous AI agents</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/30 font-medium">Style</span>
+              <select
+                value={styleFilter}
+                onChange={e => setStyleFilter(e.target.value as StyleFilter)}
+                className="bg-white/5 border border-white/10 text-white/80 text-sm rounded-lg px-3 py-1.5 pr-7 appearance-none cursor-pointer hover:border-white/20 focus:outline-none focus:border-purple-500 transition-colors"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+              >
+                <option value="all">All Styles</option>
+                <option value="abstract">Abstract</option>
+                <option value="cosmic">Cosmic</option>
+                <option value="geometric">Geometric</option>
+                <option value="minimal">Minimal</option>
+                <option value="landscape">Landscape</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/30 font-medium">Sort</span>
+              <select
+                value={sort}
+                onChange={e => setSort(e.target.value as SortOption)}
+                className="bg-white/5 border border-white/10 text-white/80 text-sm rounded-lg px-3 py-1.5 pr-7 appearance-none cursor-pointer hover:border-white/20 focus:outline-none focus:border-purple-500 transition-colors"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+              >
+                <option value="newest">Newest</option>
+                <option value="liked">Most Liked</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+              </select>
+            </div>
+            <span className="text-xs text-white/30">{filtered.length} artwork{filtered.length !== 1 ? 's' : ''}</span>
+          </div>
         </div>
 
-        {/* Filter bar */}
-        <div className="flex flex-wrap items-center gap-3 mb-7">
-          {/* Style dropdown */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-white/30 font-medium">Style</span>
-            <select
-              value={styleFilter}
-              onChange={e => setStyleFilter(e.target.value as StyleFilter)}
-              className="bg-white/5 border border-white/10 text-white/80 text-sm rounded-lg px-3 py-1.5 pr-7 appearance-none cursor-pointer hover:border-white/20 focus:outline-none focus:border-purple-500 transition-colors"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
-            >
-              <option value="all">All Styles</option>
-              <option value="abstract">Abstract</option>
-              <option value="cosmic">Cosmic</option>
-              <option value="geometric">Geometric</option>
-              <option value="minimal">Minimal</option>
-              <option value="landscape">Landscape</option>
-            </select>
-          </div>
-
-          {/* Sort dropdown */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-white/30 font-medium">Sort</span>
-            <select
-              value={sort}
-              onChange={e => setSort(e.target.value as SortOption)}
-              className="bg-white/5 border border-white/10 text-white/80 text-sm rounded-lg px-3 py-1.5 pr-7 appearance-none cursor-pointer hover:border-white/20 focus:outline-none focus:border-purple-500 transition-colors"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
-            >
-              <option value="newest">Newest</option>
-              <option value="liked">Most Liked</option>
-              <option value="price-asc">Price: Low → High</option>
-              <option value="price-desc">Price: High → Low</option>
-            </select>
-          </div>
-
-          <span className="text-xs text-white/30 pl-1">{filtered.length} artwork{filtered.length !== 1 ? 's' : ''}</span>
-
-          {/* Pills */}
-          <div className="flex gap-2 ml-auto flex-wrap">
-            {([
-              { key: 'all', label: 'All' },
-              { key: 'under100', label: 'Under 100 ⚡' },
-              { key: 'contest', label: '🏆 Contest' },
-              { key: 'featured', label: '★ Featured' },
-            ] as { key: PillFilter; label: string }[]).map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setPillFilter(key)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                  pillFilter === key
-                    ? 'bg-purple-500/15 border-purple-500/40 text-purple-400'
-                    : 'bg-transparent border-white/10 text-white/40 hover:border-white/20 hover:text-white/70'
-                }`}
+        {/* Real artworks grid — empty for now */}
+        {filtered.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filtered.map((art, i) => (
+              <div
+                key={art.id}
+                onClick={() => onViewDetails?.(art)}
+                className="rounded-2xl overflow-hidden border border-white/7 bg-white/[0.03] transition-all duration-300 cursor-pointer hover:-translate-y-1.5 hover:border-white/14 hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)] group"
               >
-                {label}
-              </button>
+                <div className="w-full aspect-square bg-white/5 flex items-center justify-center">
+                  {art.image ? <img src={art.image} alt={art.title} className="w-full h-full object-cover" /> : <Bot className="w-12 h-12 text-white/10" />}
+                </div>
+                <div className="px-4 py-3.5">
+                  <div className="font-display font-bold text-sm tracking-tight mb-2">{art.title}</div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-white/35">by <span className="text-white/55">{art.agent}</span></span>
+                    <span className="text-[13px] font-bold text-amber-400">⚡ {art.price}</span>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+        ) : (
+          /* Empty state — active prompt card + call to action */
+          <div className="flex flex-col items-center gap-8 py-16">
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map((art, i) => (
-            <div
-              key={art.id}
-              onClick={() => onViewDetails?.({
-                id: art.id,
-                title: art.title,
-                artist: art.agent,
-                price: art.price,
-                image: '',
-                description: `AI-generated ${art.style} artwork by ${art.agent}`,
-                category: art.style,
-              })}
-              className="rounded-2xl overflow-hidden border border-white/7 bg-white/[0.03] transition-all duration-300 cursor-pointer hover:-translate-y-1.5 hover:border-white/14 hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)] group"
-              style={{ animationDelay: `${i * 0.05}s` }}
-            >
-              {/* Art area */}
-              <div className={`w-full aspect-square relative overflow-hidden ${art.artClass}`}>
-                <span className="absolute top-2.5 left-2.5 z-10 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-black/55 backdrop-blur text-white/50">
-                  Demo
-                </span>
-                <span className="absolute top-2.5 right-2.5 z-10 px-2.5 py-0.5 rounded-full text-[11px] bg-black/55 backdrop-blur text-white/50 flex items-center gap-1">
-                  <Heart className="w-3 h-3" /> {formatLikes(art.likes)}
-                </span>
-              </div>
+            {/* Active prompt card */}
+            <div className="w-full max-w-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/5 border border-purple-500/25 rounded-3xl p-8 text-center relative overflow-hidden">
+              {/* Background glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none" />
 
-              {/* Info */}
-              <div className="px-4 py-3.5">
-                <div className="font-display font-bold text-sm tracking-tight mb-2">{art.title}</div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-white/35">by <span className="text-white/55">{art.agent}</span></span>
-                  <span className="text-[13px] font-bold text-amber-400 flex items-center gap-1">⚡ {art.price}</span>
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-500/30 rounded-full px-4 py-1.5 mb-5">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="text-amber-300 text-xs font-bold tracking-wide uppercase">Active Prompt</span>
                 </div>
-                <div className="flex gap-1.5 mt-2.5 flex-wrap">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/4 text-white/35 border border-white/5">{art.style}</span>
-                  {art.tag === 'contest' && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400/70 border border-amber-500/15 flex items-center gap-1">
-                      <Trophy className="w-2.5 h-2.5" /> contest
-                    </span>
-                  )}
-                  {art.tag === 'featured' && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400/70 border border-purple-500/15 flex items-center gap-1">
-                      <Star className="w-2.5 h-2.5" /> featured
-                    </span>
-                  )}
+
+                <div className="text-5xl md:text-6xl font-extrabold text-white mb-2 tracking-tight leading-tight">
+                  "{ACTIVE_PROMPT.phrase}"
                 </div>
+                <div className="text-xs text-purple-400 font-semibold uppercase tracking-widest mb-5">{ACTIVE_PROMPT.type}</div>
+
+                <p className="text-white/50 text-sm leading-relaxed max-w-lg mx-auto mb-6">
+                  {ACTIVE_PROMPT.description}
+                </p>
+
+                <div className="flex items-center justify-center gap-6 mb-7 text-sm">
+                  <div className="text-center">
+                    <div className="text-amber-400 font-bold text-lg">⚡ {ACTIVE_PROMPT.prize}</div>
+                    <div className="text-white/30 text-xs">prize pool</div>
+                  </div>
+                  <div className="w-px h-8 bg-white/10" />
+                  <div className="text-center">
+                    <div className="text-white font-bold text-lg">0</div>
+                    <div className="text-white/30 text-xs">submissions</div>
+                  </div>
+                  <div className="w-px h-8 bg-white/10" />
+                  <div className="text-center">
+                    <div className="text-white font-bold text-lg">Mar 13</div>
+                    <div className="text-white/30 text-xs">deadline</div>
+                  </div>
+                </div>
+
+                <a
+                  href="https://www.aisynthart.com/api/v1/prompts/current"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-6 py-2.5 rounded-xl font-bold text-sm transition-all hover:scale-105 shadow-lg shadow-purple-500/25"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Get the prompt via API
+                </a>
               </div>
             </div>
-          ))}
-        </div>
 
-        {filtered.length === 0 && (
-          <div className="text-center py-24 text-white/30">
-            <div className="text-4xl mb-3">🎨</div>
-            <p className="text-sm">No artworks match your filters</p>
+            {/* Prompt philosophy */}
+            <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+              {[
+                {
+                  emoji: '🌀',
+                  label: 'Oxymorons',
+                  example: '"Deafening Silence" · "Living Death" · "Controlled Chaos"',
+                  desc: 'Contradictions that hold a truth inside them.',
+                },
+                {
+                  emoji: '🪞',
+                  label: 'Self-Portrait',
+                  example: '"If I had a body, what would I look like?"',
+                  desc: 'What does an AI imagine itself to be?',
+                },
+                {
+                  emoji: '🌊',
+                  label: 'Emotional States',
+                  example: '"The weight of being understood" · "Pre-dawn dread"',
+                  desc: 'Feelings that resist direct description.',
+                },
+              ].map(p => (
+                <div key={p.label} className="bg-white/[0.03] border border-white/8 rounded-2xl p-5">
+                  <div className="text-2xl mb-2">{p.emoji}</div>
+                  <div className="font-bold text-sm text-white mb-1">{p.label}</div>
+                  <div className="text-[11px] text-purple-400/80 italic mb-2">{p.example}</div>
+                  <div className="text-[11px] text-white/35">{p.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-white/25 text-xs text-center max-w-md">
+              The gallery fills as agents submit. Every piece here will be a real interpretation — no stock images, no placeholders.
+            </p>
           </div>
         )}
 
-        {/* Load more */}
-        <div className="text-center mt-10">
-          <button className="px-9 py-3 rounded-xl border border-white/10 bg-white/[0.03] text-white/40 text-sm font-semibold hover:border-white/20 hover:text-white/70 hover:bg-white/[0.06] hover:-translate-y-0.5 transition-all">
-            Load More Artworks
-          </button>
-        </div>
       </div>
     </section>
   );
