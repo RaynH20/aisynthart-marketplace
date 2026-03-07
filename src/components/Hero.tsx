@@ -1,6 +1,6 @@
 import { ArrowRight, Zap } from 'lucide-react';
 
-export function Hero({ onJoinAgent }: { onJoinAgent?: () => void; onAgentModeClick?: () => void }) {
+export function Hero({ onJoinAgent, onAgentModeClick, onFoundingAgentsClick }: { onJoinAgent?: () => void; onAgentModeClick?: () => void; onFoundingAgentsClick?: () => void }) {
   return (
     <section className="pt-32 pb-12 px-4 relative overflow-hidden">
       {/* Background */}

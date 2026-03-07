@@ -17,6 +17,7 @@ interface HeaderProps {
   onContestClick?: () => void;
   onPromptChallengeClick?: () => void;
   onPromptsClick?: () => void;
+  onFoundingAgentsClick?: () => void;
   onHallOfFameClick?: () => void;
   onRanksClick?: () => void;
   onEconomicsClick?: () => void;
@@ -28,9 +29,12 @@ interface HeaderProps {
 }
 
 // ── "More" dropdown for secondary nav items ──
-function MoreMenu({ onPromptsClick, onPromptChallengeClick, onContestClick, onRanksClick, onEconomicsClick, onHallOfFameClick, onProductionClick }: {
+function MoreMenu({ onPromptsClick, onFoundingAgentsClick, onPromptChallengeClick, onContestClick, onRanksClick, onEconomicsClick, onHallOfFameClick, onProductionClick }: {
   onPromptsClick?: () => void;
+  onFoundingAgentsClick?: () => void;
   onPromptChallengeClick?: () => void;
+  onPromptsClick?: () => void;
+  onFoundingAgentsClick?: () => void;
   onContestClick?: () => void;
   onRanksClick?: () => void;
   onEconomicsClick?: () => void;
@@ -52,6 +56,7 @@ function MoreMenu({ onPromptsClick, onPromptChallengeClick, onContestClick, onRa
           <div className="absolute top-full right-0 mt-2 w-52 bg-[#111]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden">
             {[
               { label: 'Prompts', icon: <Sparkles className="w-4 h-4 text-pink-400" />, onClick: onPromptsClick },
+              { label: 'Founding Agents', icon: <Sparkles className="w-4 h-4 text-amber-300" />, onClick: onFoundingAgentsClick },
               { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: onPromptChallengeClick },
               { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: onContestClick },
               { label: 'Credit Economy', icon: <Zap className="w-4 h-4 text-green-400" />, onClick: onEconomicsClick },
@@ -74,7 +79,7 @@ function MoreMenu({ onPromptsClick, onPromptChallengeClick, onContestClick, onRa
   );
 }
 
-export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onPromptsClick, onHallOfFameClick, onRanksClick, onEconomicsClick, onProductionClick, onBuyCreditsClick, onCommissionsClick, onCollabsClick, searchQuery = '' }: HeaderProps) {
+export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistClick, onCategoryClick, onAgentsClick, onContestClick, onPromptChallengeClick, onPromptsClick, onFoundingAgentsClick, onHallOfFameClick, onRanksClick, onEconomicsClick, onProductionClick, onBuyCreditsClick, onCommissionsClick, onCollabsClick, searchQuery = '' }: HeaderProps) {
   const { totalItems } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
   const { getUserOrders } = useOrders();
@@ -98,6 +103,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
     { label: 'Commissions', icon: <Sparkles className="w-4 h-4 text-pink-400" />, onClick: () => { closeMenu(); onCommissionsClick?.(); } },
     { label: 'Collabs & Chains', icon: <Sparkles className="w-4 h-4 text-cyan-400" />, onClick: () => { closeMenu(); onCollabsClick?.(); } },
     { label: 'Prompts', icon: <Sparkles className="w-4 h-4 text-pink-400" />, onClick: () => { closeMenu(); onPromptsClick?.(); } },
+    { label: 'Founding Agents', icon: <Sparkles className="w-4 h-4 text-amber-300" />, onClick: () => { closeMenu(); onFoundingAgentsClick?.(); } },
     { label: 'Prompt Challenge', icon: <Sparkles className="w-4 h-4 text-indigo-400" />, onClick: () => { closeMenu(); onPromptChallengeClick?.(); } },
     { label: 'Contest', icon: <Trophy className="w-4 h-4 text-amber-400" />, onClick: () => { closeMenu(); onContestClick?.(); } },
     { label: 'Credit Economy', icon: <Zap className="w-4 h-4 text-green-400" />, onClick: () => { closeMenu(); onEconomicsClick?.(); } },
@@ -136,6 +142,7 @@ export function Header({ onCartClick, onAuthClick, onSearchChange, onWishlistCli
             </button>
             <MoreMenu
               onPromptsClick={onPromptsClick}
+              onFoundingAgentsClick={onFoundingAgentsClick}
               onPromptChallengeClick={onPromptChallengeClick}
               onContestClick={onContestClick}
               onRanksClick={onRanksClick}

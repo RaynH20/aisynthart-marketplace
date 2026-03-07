@@ -29,6 +29,7 @@ import { CollabsPage } from './components/CollabsPage';
 import { ProductionStudio } from './components/ProductionStudio';
 import { LiveFeed } from './components/LiveFeed';
 import { PromptsPage } from './components/PromptsPage';
+import { FoundingAgents } from './components/FoundingAgents';
 import { BuyCreditsModal } from './components/credits/BuyCreditsModal';
 import { Artwork } from './context/CartContext';
 
@@ -43,8 +44,9 @@ function App() {
   const [isEconomicsOpen, setIsEconomicsOpen] = useState(false);
   const [isAgentModeOpen, setIsAgentModeOpen] = useState(false);
   const [isPromptsOpen, setIsPromptsOpen] = useState(false);
+  const [isFoundingAgentsOpen, setIsFoundingAgentsOpen] = useState(false);
 
-  // Secret admin shortcut: press Shift+A+D+M in sequence
+  // Secret admin shortcut: type 'sadm'
   useEffect(() => {
     let seq = '';
     const handler = (e: KeyboardEvent) => {
@@ -55,6 +57,7 @@ function App() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
   const [isAgentOnboardingOpen, setIsAgentOnboardingOpen] = useState(false);
   const [isContestOpen, setIsContestOpen] = useState(false);
   const [isHallOfFameOpen, setIsHallOfFameOpen] = useState(false);
@@ -66,9 +69,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-  };
+  const handleSearchChange = (query: string) => setSearchQuery(query);
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
@@ -114,17 +115,9 @@ function App() {
     setIsAgentsOpen(false);
   };
 
-  const handleViewDetails = (artwork: Artwork) => {
-    setSelectedArtwork(artwork);
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedArtwork(null);
-  };
-
-  const handleBuyCredits = () => {
-    setIsBuyCreditsOpen(true);
-  };
+  const handleViewDetails = (artwork: Artwork) => setSelectedArtwork(artwork);
+  const handleCloseDetails = () => setSelectedArtwork(null);
+  const handleBuyCredits = () => setIsBuyCreditsOpen(true);
 
   return (
     <AuthProvider>
@@ -136,11 +129,12 @@ function App() {
                 <AgentProvider>
                 <ProductionProvider>
                   <div className="min-h-screen bg-[#0a0a0a] text-white">
-                    {/* Production Studio */}
                     {isProductionOpen ? (
                       <LiveFeed onClose={() => setIsProductionOpen(false)} />
                     ) : isPromptsOpen ? (
                       <PromptsPage onClose={() => setIsPromptsOpen(false)} onJoinAgent={() => { setIsPromptsOpen(false); setIsAgentOnboardingOpen(true); }} />
+                    ) : isFoundingAgentsOpen ? (
+                      <FoundingAgents onClose={() => setIsFoundingAgentsOpen(false)} onJoinAgent={() => { setIsFoundingAgentsOpen(false); setIsAgentOnboardingOpen(true); }} />
                     ) : isAdminOpen ? (
                       <AdminPanel onClose={() => setIsAdminOpen(false)} />
                     ) : isRanksOpen ? (
@@ -154,41 +148,25 @@ function App() {
                     ) : isContestOpen ? (
                       <ContestPage onClose={() => setIsContestOpen(false)} />
                     ) : isHallOfFameOpen ? (
-                      /* Hall of Fame Page */
-                      <HallOfFamePage
-                        onClose={() => setIsHallOfFameOpen(false)}
-                      />
+                      <HallOfFamePage onClose={() => setIsHallOfFameOpen(false)} />
                     ) : isCommissionsOpen ? (
-                      /* Commission Board */
                       <div className="min-h-screen">
                         <CommissionBoard onClose={() => setIsCommissionsOpen(false)} />
                       </div>
                     ) : isCollabsOpen ? (
-                      /* Collabs & Evolution Chains */
                       <div className="min-h-screen">
                         <CollabsPage onClose={() => setIsCollabsOpen(false)} />
                       </div>
                     ) : isAgentsOpen ? (
-                      /* Agents Page */
-                      <AgentsPage
-                        onClose={() => setIsAgentsOpen(false)}
-                      />
+                      <AgentsPage onClose={() => setIsAgentsOpen(false)} />
                     ) : isAgentOnboardingOpen ? (
-                      /* Agent Onboarding */
-                      <AgentOnboarding
-                        onClose={() => setIsAgentOnboardingOpen(false)}
-                      />
+                      <AgentOnboarding onClose={() => setIsAgentOnboardingOpen(false)} />
                     ) : isWishlistOpen ? (
-                      /* Wishlist Page */
                       <WishlistPage
-                        onViewDetails={(artwork) => {
-                          setSelectedArtwork(artwork);
-                          setIsWishlistOpen(false);
-                        }}
+                        onViewDetails={(artwork) => { setSelectedArtwork(artwork); setIsWishlistOpen(false); }}
                         onClose={() => setIsWishlistOpen(false)}
                       />
                     ) : (
-                      /* Main Marketplace */
                       <>
                         <Header
                           onCartClick={() => setIsCartOpen(true)}
@@ -207,30 +185,28 @@ function App() {
                           onBuyCreditsClick={handleBuyCredits}
                           onCommissionsClick={() => setIsCommissionsOpen(true)}
                           onCollabsClick={() => setIsCollabsOpen(true)}
+                          onFoundingAgentsClick={() => setIsFoundingAgentsOpen(true)}
                           searchQuery={searchQuery}
                         />
-                        <Hero onJoinAgent={() => setIsAgentOnboardingOpen(true)} onAgentModeClick={() => setIsAgentModeOpen(true)} />
+                        <Hero
+                          onJoinAgent={() => setIsAgentOnboardingOpen(true)}
+                          onAgentModeClick={() => setIsAgentModeOpen(true)}
+                          onFoundingAgentsClick={() => setIsFoundingAgentsOpen(true)}
+                        />
                         <Gallery
                           searchQuery={searchQuery}
                           selectedCategory={selectedCategory}
                           onViewDetails={handleViewDetails}
                         />
                         <Footer />
-                        <Cart
-                          isOpen={isCartOpen}
-                          onClose={() => setIsCartOpen(false)}
-                          onBuyCredits={handleBuyCredits}
-                        />
+                        <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} onBuyCredits={handleBuyCredits} />
                         <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
                         <ArtworkDetailModal
                           artwork={selectedArtwork}
                           isOpen={selectedArtwork !== null}
                           onClose={handleCloseDetails}
                         />
-                        <BuyCreditsModal
-                          isOpen={isBuyCreditsOpen}
-                          onClose={() => setIsBuyCreditsOpen(false)}
-                        />
+                        <BuyCreditsModal isOpen={isBuyCreditsOpen} onClose={() => setIsBuyCreditsOpen(false)} />
                       </>
                     )}
                   </div>
