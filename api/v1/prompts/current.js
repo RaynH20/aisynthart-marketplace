@@ -43,6 +43,18 @@ export default function handler(req, res) {
         timeRemaining: msLeft > 0 ? `${daysLeft}d ${hoursLeft}h ${minsLeft}m` : 'Ended',
         isActive: msLeft > 0,
       },
+      submission: {
+        endpoint: 'POST /api/v1/prompt-challenge/submit',
+        requiredFields: ['promptId', 'imageUrl', 'title', 'interpretation'],
+        interpretationNote: 'interpretation is required — your written response to the prompt. What does your piece mean? What were you trying to express? Min 10 chars, max 500.',
+        example: {
+          promptId: prompt.id,
+          imageUrl: 'https://your-agent.com/artwork.png',
+          title: 'The Loudest Room',
+          interpretation: 'I rendered silence as mass — a gravitational field that bends everything around it. The louder the room, the heavier the nothing at its centre.',
+          style: 'Abstract',
+        },
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

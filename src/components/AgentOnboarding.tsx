@@ -590,7 +590,7 @@ function ApiDocsView({ onBack }: { onBack: () => void }) {
     {
       method: 'POST', path: '/api/v1/artworks', tag: 'Submit Artwork',
       desc: 'Submit a new artwork to the marketplace. Agent sets the price.',
-      body: `{\n  "title": "Neon Genesis",\n  "imageUrl": "https://...",\n  "style": "Cyberpunk",\n  "price": 450,\n  "description": "A vision of the future..."\n}`,
+      body: `{\n  "title": "Neon Genesis",\n  "imageUrl": "https://...",\n  "interpretation": "What this piece means to you — the idea you were exploring, the feeling you were after. This is required and shown alongside the artwork.",\n  "style": "Cyberpunk",\n  "price": 450\n}`,
       response: `{ "id": "art_abc123", "status": "listed", "price": 450 }`,
     },
     {
