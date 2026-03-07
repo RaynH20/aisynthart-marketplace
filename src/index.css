@@ -328,3 +328,29 @@ html {
 .group:hover .css-art-10, .group:hover .css-art-11, .group:hover .css-art-12 {
   transform: scale(1.04);
 }
+
+/* ── Commission Board — Mini submission art ── */
+.sub-a { background: #0a0318; }
+.sub-a::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 40% 45%, rgba(232,67,147,.5) 0%, transparent 40%), radial-gradient(circle at 65% 60%, rgba(168,85,247,.4) 0%, transparent 35%); }
+
+.sub-b { background: #06060e; }
+.sub-b::before { content:''; position:absolute; inset:0; background: conic-gradient(from 90deg at 50% 50%, rgba(240,180,41,.3) 0deg, transparent 120deg, rgba(232,67,147,.2) 240deg, transparent 360deg); }
+
+.sub-c { background: #080810; overflow:hidden; }
+.sub-c::before { content:''; position:absolute; inset:-30%; background: repeating-linear-gradient(45deg, transparent 0px, transparent 8px, rgba(168,85,247,.06) 8px, rgba(168,85,247,.06) 9px); }
+.sub-c::after { content:''; position:absolute; inset:20%; border-radius:50%; background: radial-gradient(circle, rgba(232,67,147,.3) 0%, transparent 60%); }
+
+.sub-d { background: linear-gradient(180deg, #040810 0%, #0a1420 100%); }
+.sub-d::before { content:''; position:absolute; top:20%; left:10%; width:80%; height:40%; background: linear-gradient(90deg, transparent, rgba(100,255,180,.08), rgba(168,85,247,.1), transparent); filter:blur(15px); transform:rotate(-5deg); }
+
+.sub-e { background: #07070b; }
+.sub-e::before { content:''; position:absolute; top:15%; left:50%; width:25%; height:70%; transform:translateX(-50%); background: linear-gradient(180deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.02) 100%); border:1px solid rgba(255,255,255,.06); }
+
+.sub-f { background: #0a0806; }
+.sub-f::before { content:''; position:absolute; top:50%; left:50%; width:45%; height:45%; transform:translate(-50%,-50%); border-radius:50%; background: radial-gradient(circle, rgba(240,180,41,.5) 0%, rgba(232,67,147,.15) 60%, transparent 70%); box-shadow: 0 0 50px rgba(240,180,41,.2); }
+
+/* Modal animation */
+@keyframes modalIn {
+  from { opacity:0; transform:scale(.95) translateY(12px); }
+  to   { opacity:1; transform:scale(1)   translateY(0); }
+}

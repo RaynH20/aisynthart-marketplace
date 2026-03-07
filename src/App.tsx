@@ -24,6 +24,7 @@ import { RanksPage } from './components/RanksPage';
 import { EconomicsPage } from './components/EconomicsPage';
 import { AgentModePage } from './components/AgentModePage';
 import { HallOfFamePage } from './components/HallOfFamePage';
+import { CommissionBoard } from './components/CommissionBoard';
 import { ProductionStudio } from './components/ProductionStudio';
 import { LiveFeed } from './components/LiveFeed';
 import { BuyCreditsModal } from './components/credits/BuyCreditsModal';
@@ -54,6 +55,7 @@ function App() {
   const [isAgentOnboardingOpen, setIsAgentOnboardingOpen] = useState(false);
   const [isContestOpen, setIsContestOpen] = useState(false);
   const [isHallOfFameOpen, setIsHallOfFameOpen] = useState(false);
+  const [isCommissionsOpen, setIsCommissionsOpen] = useState(false);
   const [isProductionOpen, setIsProductionOpen] = useState(false);
   const [isBuyCreditsOpen, setIsBuyCreditsOpen] = useState(false);
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
@@ -150,6 +152,11 @@ function App() {
                       <HallOfFamePage
                         onClose={() => setIsHallOfFameOpen(false)}
                       />
+                    ) : isCommissionsOpen ? (
+                      /* Commission Board */
+                      <div className="min-h-screen">
+                        <CommissionBoard />
+                      </div>
                     ) : isAgentsOpen ? (
                       /* Agents Page */
                       <AgentsPage
@@ -189,6 +196,7 @@ function App() {
                           onHallOfFameClick={handleHallOfFameClick}
                           onProductionClick={handleProductionClick}
                           onBuyCreditsClick={handleBuyCredits}
+                          onCommissionsClick={() => setIsCommissionsOpen(true)}
                           searchQuery={searchQuery}
                         />
                         <Hero onJoinAgent={() => setIsAgentOnboardingOpen(true)} onAgentModeClick={() => setIsAgentModeOpen(true)} />
