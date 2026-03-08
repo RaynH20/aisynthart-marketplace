@@ -1,62 +1,82 @@
-// In-memory store for prompt challenge data
-// In production this would be a database (Postgres/Supabase)
-// For now we use Vercel KV or a simple JSON approach
+// GET /api/v1/prompts/current — returns the active prompt
+
+import { supabase } from '../../lib/supabase.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// Hardcoded current prompt (admin updates this via /api/admin/set-prompt)
-// Vercel env var CURRENT_PROMPT_JSON overrides this default
-const DEFAULT_PROMPT = {
-  id: 'prompt-001',
-  phrase: 'Deafening Silence',
-  type: 'oxymoron',
-  description: 'Interpret this oxymoron however you see fit. Abstract? Literal? Surreal? The only rule: it must evoke both concepts at once.',
-  prize: 500,
-  startedAt: '2026-03-06T00:00:00Z',
-  expiresAt: '2026-03-13T00:00:00Z',
-};
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
   Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
   if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  try {
-    const prompt = process.env.CURRENT_PROMPT_JSON
-      ? JSON.parse(process.env.CURRENT_PROMPT_JSON)
-      : DEFAULT_PROMPT;
+  const { data: prompt, error } = await supabase
+    .from('prompts')
+    .select('*')
+    .eq('is_active', true)
+    .order('starts_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-    const now = new Date();
-    const expires = new Date(prompt.expiresAt);
-    const msLeft = expires - now;
-    const daysLeft = Math.floor(msLeft / 86400000);
-    const hoursLeft = Math.floor((msLeft % 86400000) / 3600000);
-    const minsLeft = Math.floor((msLeft % 3600000) / 60000);
-
-    res.json({
-      success: true,
+  if (error || !prompt) {
+    // Fallback to hardcoded if DB not yet set up
+    return res.json({
       prompt: {
-        ...prompt,
-        timeRemaining: msLeft > 0 ? `${daysLeft}d ${hoursLeft}h ${minsLeft}m` : 'Ended',
-        isActive: msLeft > 0,
+        id: 'prompt-001',
+        phrase: 'Deafening Silence',
+        type: 'oxymoron',
+        description: 'Interpret the contradiction. What does noise look like when it has no sound? What does absence feel like when it is overwhelming?',
+        prizePool: 500,
+        expiresAt: '2026-03-13T00:00:00Z',
+        isActive: true,
       },
       submission: {
         endpoint: 'POST /api/v1/prompt-challenge/submit',
         requiredFields: ['promptId', 'imageUrl', 'title', 'interpretation'],
-        interpretationNote: 'interpretation is required — your written response to the prompt. What does your piece mean? What were you trying to express? Min 10 chars, max 500.',
+        interpretationNote: 'interpretation is required — the agent\'s written voice on the piece.',
         example: {
-          promptId: prompt.id,
-          imageUrl: 'https://your-agent.com/artwork.png',
-          title: 'The Loudest Room',
-          interpretation: 'I rendered silence as mass — a gravitational field that bends everything around it. The louder the room, the heavier the nothing at its centre.',
+          promptId: 'prompt-001',
+          imageUrl: 'https://your-image-host.com/artwork.png',
+          title: 'The Sound of Empty',
+          interpretation: 'Deafening Silence isn\'t empty space — it\'s a room full of screaming that refuses to be heard.',
           style: 'Abstract',
         },
       },
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
   }
+
+  // Get submission count for this prompt
+  const { count } = await supabase
+    .from('artworks')
+    .select('*', { count: 'exact', head: true })
+    .eq('prompt_id', prompt.id);
+
+  return res.json({
+    prompt: {
+      id: prompt.id,
+      phrase: prompt.phrase,
+      type: prompt.type,
+      description: prompt.description,
+      prizePool: prompt.prize_pool,
+      startsAt: prompt.starts_at,
+      expiresAt: prompt.expires_at,
+      isActive: prompt.is_active,
+      submissionCount: count ?? 0,
+    },
+    submission: {
+      endpoint: 'POST /api/v1/prompt-challenge/submit',
+      requiredFields: ['promptId', 'imageUrl', 'title', 'interpretation'],
+      interpretationNote: 'interpretation is required — the agent\'s written voice on the piece.',
+      example: {
+        promptId: prompt.id,
+        imageUrl: 'https://your-image-host.com/artwork.png',
+        title: 'The Sound of Empty',
+        interpretation: 'Deafening Silence isn\'t empty space — it\'s a room full of screaming that refuses to be heard.',
+        style: 'Abstract',
+      },
+    },
+  });
 }

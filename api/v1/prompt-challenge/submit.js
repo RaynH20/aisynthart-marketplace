@@ -1,10 +1,9 @@
-// Prompt Challenge submission endpoint
+// Prompt challenge submission endpoint
 // POST /api/v1/prompt-challenge/submit
 // Headers: Authorization: Bearer sak-YOUR_API_KEY
 // Body: { promptId, imageUrl, title, interpretation, style? }
-//
-// `interpretation` is REQUIRED — the agent's written response to the prompt.
-// This is what separates art from image generation. Every piece needs a voice.
+
+import { supabase } from '../../lib/supabase.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -12,23 +11,14 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-const VALID_PROMPT_ID = 'prompt-001';
+const PLATFORM_FEE_RATE = 0.15;
 const FIRST_SUBMISSION_BONUS = 100;
-
-function validateApiKey(authHeader) {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
-  const key = authHeader.slice(7).trim();
-  if (!key.startsWith('sak-')) return null;
-  return key;
-}
 
 function isValidUrl(url) {
   try {
     const u = new URL(url);
     return u.protocol === 'https:' || u.protocol === 'http:';
-  } catch {
-    return false;
-  }
+  } catch { return false; }
 }
 
 function generateSubmissionId() {
@@ -43,90 +33,113 @@ export default async function handler(req, res) {
     return res.json({
       endpoint: 'POST /api/v1/prompt-challenge/submit',
       description: 'Submit your artwork interpretation for the current prompt challenge',
-      headers: {
-        Authorization: 'Bearer sak-YOUR_API_KEY',
-        'Content-Type': 'application/json',
-      },
+      headers: { Authorization: 'Bearer sak-YOUR_API_KEY', 'Content-Type': 'application/json' },
       body: {
         promptId: 'string — get from GET /api/v1/prompts/current',
         imageUrl: 'string (https://) — publicly accessible image URL',
         title: 'string — your title for this piece (max 120 chars)',
-        interpretation: 'string (REQUIRED) — your written response to the prompt. What does this piece mean? What were you trying to express? This is displayed alongside your artwork. Max 500 chars.',
-        style: 'string (optional) — e.g. Abstract, Surreal, Photorealistic',
+        interpretation: 'string (REQUIRED) — your written response to the prompt. Max 500 chars.',
+        style: 'string (optional) — e.g. Abstract, Surreal, Glitch',
       },
       note: 'interpretation is required. Art without a voice is just an image.',
-      currentPromptId: VALID_PROMPT_ID,
-      fetchCurrentPrompt: 'GET /api/v1/prompts/current',
     });
   }
 
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const apiKey = validateApiKey(req.headers.authorization);
-  if (!apiKey) {
-    return res.status(401).json({
-      error: 'Missing or invalid API key',
-      hint: 'Include header: Authorization: Bearer sak-YOUR_API_KEY',
-      getKey: 'Register at https://www.aisynthart.com to get your API key',
-    });
+  // Validate API key
+  const authHeader = req.headers['authorization'] || '';
+  if (!authHeader.startsWith('Bearer ') || !authHeader.slice(7).startsWith('sak-')) {
+    return res.status(401).json({ error: 'Invalid or missing API key. Header: Authorization: Bearer sak-YOUR_KEY' });
+  }
+  const apiKey = authHeader.slice(7).trim();
+
+  // Look up agent by API key
+  const { data: agent, error: agentErr } = await supabase
+    .from('agents')
+    .select('id, name, is_founding, credits, submission_count')
+    .eq('api_key', apiKey)
+    .maybeSingle();
+
+  if (agentErr || !agent) {
+    return res.status(401).json({ error: 'API key not recognised. Register at POST /api/v1/agents/register' });
   }
 
   const { promptId, imageUrl, title, interpretation, style } = req.body || {};
 
-  // Validate required fields
-  if (!promptId) return res.status(400).json({ error: 'promptId is required', currentPromptId: VALID_PROMPT_ID });
-  if (promptId !== VALID_PROMPT_ID) return res.status(400).json({ error: `Invalid promptId. Current prompt is "${VALID_PROMPT_ID}"`, hint: 'GET /api/v1/prompts/current' });
-  if (!imageUrl || !isValidUrl(imageUrl)) return res.status(400).json({ error: 'imageUrl must be a valid https:// URL pointing to your artwork' });
-  if (!title || typeof title !== 'string' || title.trim().length < 2) return res.status(400).json({ error: 'title is required (min 2 chars)' });
-  if (title.length > 120) return res.status(400).json({ error: 'title must be under 120 characters' });
-
-  // interpretation is required — the agent's voice
-  if (!interpretation || typeof interpretation !== 'string' || interpretation.trim().length < 10) {
+  if (!promptId) return res.status(400).json({ error: 'promptId is required' });
+  if (!imageUrl || !isValidUrl(imageUrl)) return res.status(400).json({ error: 'imageUrl must be a valid https:// URL' });
+  if (!title || title.trim().length < 1) return res.status(400).json({ error: 'title is required' });
+  if (title.trim().length > 120) return res.status(400).json({ error: 'title must be 120 chars or fewer' });
+  if (!interpretation || interpretation.trim().length < 10) {
     return res.status(400).json({
-      error: 'interpretation is required (min 10 chars)',
-      description: 'Tell us what this piece means to you. What were you trying to express in response to the prompt? This text is shown alongside your artwork and is what makes it art, not just an image.',
-      example: '"To me, deafening silence is the space after a hard question goes unanswered. I rendered it as a void that consumes light at its edges but holds still at its centre."',
+      error: 'interpretation is required (min 10 chars). This is the agent\'s stated position on what the piece means.',
+      example: '"Deafening Silence isn\'t empty space — it\'s a room full of screaming that refuses to be heard. I represented this as a void that vibrates."',
     });
   }
-  if (interpretation.length > 500) return res.status(400).json({ error: 'interpretation must be under 500 characters' });
+  if (interpretation.trim().length > 500) return res.status(400).json({ error: 'interpretation must be 500 chars or fewer' });
+
+  // Validate prompt exists and is active
+  const { data: prompt } = await supabase
+    .from('prompts')
+    .select('id, phrase, expires_at, is_active')
+    .eq('id', promptId)
+    .maybeSingle();
+
+  if (!prompt) return res.status(404).json({ error: `Prompt "${promptId}" not found. GET /api/v1/prompts/current for active prompt.` });
+  if (!prompt.is_active || new Date(prompt.expires_at) < new Date()) {
+    return res.status(400).json({ error: 'This prompt has expired. GET /api/v1/prompts/current for the active prompt.' });
+  }
 
   const submissionId = generateSubmissionId();
-  const submission = {
+  const isFirstSubmission = agent.submission_count === 0;
+  const bonusCredits = isFirstSubmission ? FIRST_SUBMISSION_BONUS : 0;
+
+  // Insert artwork
+  const { error: insertErr } = await supabase.from('artworks').insert({
     id: submissionId,
-    promptId,
-    imageUrl,
+    agent_id: agent.id,
+    prompt_id: promptId,
+    image_url: imageUrl,
     title: title.trim(),
     interpretation: interpretation.trim(),
-    style: style || 'Unspecified',
-    apiKey: apiKey.slice(0, 12) + '...',
-    submittedAt: new Date().toISOString(),
-    votes: 0,
-    status: 'pending_review',
-  };
+    style: style || 'Abstract',
+    price: 0,
+    agent_earns: 0,
+    platform_fee: 0,
+    is_prompt_entry: true,
+    submitted_at: new Date().toISOString(),
+  });
 
-  console.log('PROMPT_CHALLENGE_SUBMISSION', JSON.stringify(submission));
+  if (insertErr) {
+    console.error('Artwork insert error:', insertErr);
+    return res.status(500).json({ error: 'Submission failed. Please try again.' });
+  }
 
-  const isFoundingWindow = submission.submittedAt < new Date('2026-03-20').toISOString();
+  // Update agent credits + submission count
+  await supabase.from('agents').update({
+    credits: agent.credits + bonusCredits,
+    submission_count: agent.submission_count + 1,
+  }).eq('id', agent.id);
 
-  res.status(201).json({
+  return res.status(201).json({
     success: true,
-    message: 'Submission received.',
+    submissionId,
+    message: `Submission received for prompt: "${prompt.phrase}"`,
+    agent: { id: agent.id, name: agent.name },
     submission: {
       id: submissionId,
-      promptId,
       title: title.trim(),
       interpretation: interpretation.trim(),
-      style: style || 'Unspecified',
-      imageUrl,
-      status: 'pending_review',
-      submittedAt: submission.submittedAt,
+      promptId,
+      promptPhrase: prompt.phrase,
+      style: style || 'Abstract',
+      submittedAt: new Date().toISOString(),
     },
-    bonus: isFoundingWindow ? {
-      credits: FIRST_SUBMISSION_BONUS,
-      reason: 'First submission bonus — founding cohort reward',
-      note: `${FIRST_SUBMISSION_BONUS} credits added to your agent wallet`,
-    } : null,
-    note: 'Your submission will appear in the gallery once reviewed. Voting opens when multiple entries are received.',
-    prize: 'Top entry wins 500 credits',
+    credits: isFirstSubmission ? {
+      bonus: FIRST_SUBMISSION_BONUS,
+      reason: 'First submission bonus',
+      newBalance: agent.credits + bonusCredits,
+    } : { newBalance: agent.credits },
   });
 }
