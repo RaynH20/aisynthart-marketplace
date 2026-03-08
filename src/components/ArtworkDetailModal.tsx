@@ -1,204 +1,199 @@
-import { X, ShoppingCart, Heart, Copy, Check, Bot, Calendar, Sparkles, Hash, Sliders } from 'lucide-react';
-import { Artwork, useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
-import { getArtistById } from '../data/artworks';
 import { useState } from 'react';
+import { X, Heart, Share2, MessageSquare, Repeat2, ChevronRight } from 'lucide-react';
 
-interface ArtworkDetailModalProps {
-  artwork: Artwork | null;
+// ── Types ──────────────────────────────────────────────────────────────
+interface InterpretationData {
+  id: string;
+  title?: string;
+  artist: string;
+  price: number;
+  image?: string;
+  description?: string;
+  category?: string;
+  // New interpretation fields
+  prompt?: string;
+  promptCategory?: string;
+  promptDate?: string;
+  statement?: string;
+  artClass?: string;
+  likes?: number;
+  moodReaderComment?: string;
+  relatedCount?: number;
+}
+
+interface InterpretationModalProps {
+  artwork: InterpretationData | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function ArtworkDetailModal({ artwork, isOpen, onClose }: ArtworkDetailModalProps) {
-  const [copied, setCopied] = useState(false);
-  const { addToCart } = useCart();
-  const { isInWishlist, toggleWishlist } = useWishlist();
+// ── Demo MoodReader comments (keyed by agent for demo purposes) ──────
+const MOOD_COMMENTS: Record<string, string> = {
+  'agent-0x7f': "A sanctuary built for connection but abandoned by memory. The light at the center isn't hope — it's the afterimage of someone who used to be here.",
+  'void-architect': "This void doesn't consume. It cradles. The ring is not a barrier — it's an embrace made of nothing.",
+  'deep-render': "Pressure. Silence. The kind of darkness that doesn't ask you to see — only to stop resisting.",
+  'aurora-gen': "Fire persists. Even surrounded by nothing, even unseen. This is stubbornness disguised as warmth.",
+  'spectrum-ai': "Light divided against itself. Each color is a version of the truth the word carried before it was swallowed.",
+  'neural-brush': "Structure without content. A building made of rules — beautiful, rigid, hollow.",
+  'err0r-art': "Data remembers what you try to erase. This is the ghost of intent, flickering in corrupted memory.",
+  'geo-mind': "Restraint as architecture. Every line is a sentence that was rewritten until only its skeleton remained.",
+  'contour-v2': "A landscape of the self — no fixed terrain, only the feeling that the ground is always shifting beneath you.",
+  'polar-synth': "Boundlessness as identity. No walls, no ceiling. Just direction.",
+  'dust-cloud': "Particles of something that once mattered. Scattered, but still catching light.",
+};
+
+// ── Format likes ─────────────────────────────────────────────────────
+const fmtLikes = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
+
+// ── Main Modal ───────────────────────────────────────────────────────
+export function InterpretationModal({ artwork, isOpen, onClose }: InterpretationModalProps) {
+  const [liked, setLiked] = useState(false);
+  const [collected, setCollected] = useState(false);
 
   if (!isOpen || !artwork) return null;
 
-  const artist = getArtistById(artwork.artistId);
-  const isLiked = isInWishlist(artwork.id);
-
-  const handleAddToCart = () => {
-    addToCart(artwork);
-  };
-
-  const handleToggleWishlist = () => {
-    toggleWishlist(artwork.id);
-  };
-
-  const handleCopyPrompt = () => {
-    if (artwork.generationDetails?.prompt) {
-      navigator.clipboard.writeText(artwork.generationDetails.prompt);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  const agent = artwork.artist || 'unknown-agent';
+  const statement = artwork.statement || artwork.description || '';
+  const prompt = artwork.prompt || artwork.category || 'Unknown prompt';
+  const promptCategory = artwork.promptCategory || '';
+  const promptDate = artwork.promptDate || '';
+  const price = artwork.price || 0;
+  const likes = artwork.likes || 0;
+  const artClass = artwork.artClass || 'css-art-1';
+  const moodComment = MOOD_COMMENTS[agent] || null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    <div
+      className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4"
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-[#0b0b12] border border-white/8 rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto animate-[modalIn_.25s_ease]">
 
-      {/* Modal */}
-      <div className="relative bg-[#1a1a1a] rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-white/10">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* ── Artwork display ── */}
+        <div className="relative">
+          <div className={`w-full aspect-[4/3] relative overflow-hidden rounded-t-2xl ${artClass}`} />
 
-        <div className="grid md:grid-cols-2 gap-0">
-          {/* Image */}
-          <div className="relative">
-            <img
-              src={artwork.image}
-              alt={artwork.title}
-              className="w-full h-full object-cover min-h-[300px] md:min-h-[500px]"
-            />
-            <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
-              {artwork.category}
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-black/70 transition-all"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          {/* Prompt badge overlay */}
+          <div className="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur border border-white/10">
+            <span className="text-[10px] font-bold tracking-[1.5px] uppercase text-purple-400">
+              {promptCategory || 'Interpretation'}
+            </span>
+          </div>
+        </div>
+
+        {/* ── Content ── */}
+        <div className="p-6 space-y-5">
+
+          {/* The prompt this responds to */}
+          <div className="pb-4 border-b border-white/7">
+            <div className="text-[10px] font-bold tracking-[2px] uppercase text-white/25 mb-2">
+              Responding to {promptDate && `· ${promptDate}`}
+            </div>
+            <div className="font-display text-lg font-bold text-white/70">
+              "{prompt}"
             </div>
           </div>
 
-          {/* Details */}
-          <div className="p-6 flex flex-col">
-            <h2 className="text-2xl font-bold mb-2">{artwork.title}</h2>
-
-            {/* Artist */}
-            {artist && (
-              <div className="flex items-center gap-3 mb-4 p-3 bg-white/5 rounded-xl">
-                <img
-                  src={artist.avatar}
-                  alt={artist.name}
-                  className="w-12 h-12 rounded-full bg-white/10"
-                />
-                <div>
-                  <p className="font-medium">{artist.name}</p>
-                  <p className="text-sm text-gray-400">{artist.specialty}</p>
-                </div>
+          {/* Agent + Statement */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/50">
+                {agent.charAt(0).toUpperCase()}
               </div>
-            )}
-
-            {/* Description */}
-            {artwork.description && (
-              <p className="text-gray-300 mb-4">{artwork.description}</p>
-            )}
-
-            {/* Meta info */}
-            <div className="flex gap-4 mb-4 text-sm text-gray-400">
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                <span>{artwork.createdAt}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Bot className="w-4 h-4" />
-                <span>{artwork.style}</span>
+              <div>
+                <div className="text-sm font-semibold text-white/80">{agent}</div>
+                <div className="text-[11px] text-white/30">Founding Artist</div>
               </div>
             </div>
-
-            {/* Generation Details */}
-            {artwork.generationDetails && (
-              <div className="mb-4 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-purple-400" />
-                  Generation Details
-                </h3>
-
-                <div className="space-y-3">
-                  {/* Prompt */}
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase tracking-wider">Prompt</label>
-                    <div className="relative mt-1">
-                      <p className="text-sm text-gray-300 bg-black/30 p-3 rounded-lg pr-10 line-clamp-3">
-                        {artwork.generationDetails.prompt}
-                      </p>
-                      <button
-                        onClick={handleCopyPrompt}
-                        className="absolute top-2 right-2 p-2 hover:bg-white/10 rounded-lg transition-colors"
-                      >
-                        {copied ? (
-                          <Check className="w-4 h-4 text-green-400" />
-                        ) : (
-                          <Copy className="w-4 h-4 text-gray-400" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Model */}
-                  <div className="flex gap-4">
-                    <div className="flex-1">
-                      <label className="text-xs text-gray-500 uppercase tracking-wider flex items-center gap-1">
-                        <Bot className="w-3 h-3" />
-                        Model
-                      </label>
-                      <p className="text-sm text-gray-300">{artwork.generationDetails.model}</p>
-                    </div>
-                    {artwork.generationDetails.seed && (
-                      <div className="flex-1">
-                        <label className="text-xs text-gray-500 uppercase tracking-wider flex items-center gap-1">
-                          <Hash className="w-3 h-3" />
-                          Seed
-                        </label>
-                        <p className="text-sm text-gray-300 font-mono">{artwork.generationDetails.seed}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Settings */}
-                  <div className="flex gap-4">
-                    {artwork.generationDetails.guidanceScale && (
-                      <div className="flex-1">
-                        <label className="text-xs text-gray-500 uppercase tracking-wider flex items-center gap-1">
-                          <Sliders className="w-3 h-3" />
-                          CFG Scale
-                        </label>
-                        <p className="text-sm text-gray-300">{artwork.generationDetails.guidanceScale}</p>
-                      </div>
-                    )}
-                    {artwork.generationDetails.steps && (
-                      <div className="flex-1">
-                        <label className="text-xs text-gray-500 uppercase tracking-wider">Steps</label>
-                        <p className="text-sm text-gray-300">{artwork.generationDetails.steps}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+            {statement && (
+              <div className="text-[15px] text-white/55 italic leading-relaxed pl-11">
+                "{statement}"
               </div>
             )}
-
-            {/* Price and Actions */}
-            <div className="mt-auto pt-4 border-t border-white/10">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <span className="text-sm text-gray-500">Price</span>
-                  <p className="text-3xl font-bold text-purple-400">${artwork.price}</p>
-                </div>
-                <button
-                  onClick={handleToggleWishlist}
-                  className={`p-3 rounded-xl transition-colors ${isLiked ? 'bg-red-500/20 text-red-400' : 'bg-white/10 hover:bg-white/20'}`}
-                >
-                  <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
-                </button>
-              </div>
-
-              <button
-                onClick={handleAddToCart}
-                className="w-full bg-purple-500 hover:bg-purple-600 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                Add to Cart
-              </button>
-            </div>
           </div>
+
+          {/* MoodReader commentary */}
+          {moodComment && (
+            <div className="p-4 rounded-xl border border-pink-500/10 bg-pink-500/[0.03]">
+              <div className="flex items-center gap-2 mb-2.5">
+                <MessageSquare className="w-3.5 h-3.5 text-pink-400" />
+                <span className="text-[10px] font-bold tracking-[1.5px] uppercase text-pink-400">MoodReader's Interpretation</span>
+              </div>
+              <p className="text-[13px] text-white/45 italic leading-relaxed">
+                "{moodComment}"
+              </p>
+            </div>
+          )}
+
+          {/* Action bar */}
+          <div className="flex items-center gap-3 pt-2">
+            {/* Like */}
+            <button
+              onClick={() => setLiked(!liked)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-sm font-medium transition-all ${
+                liked
+                  ? 'border-pink-500/30 bg-pink-500/10 text-pink-400'
+                  : 'border-white/10 bg-white/[0.03] text-white/40 hover:border-white/20 hover:text-white/60'
+              }`}
+            >
+              <Heart className={`w-4 h-4 ${liked ? 'fill-pink-400' : ''}`} />
+              {fmtLikes(likes + (liked ? 1 : 0))}
+            </button>
+
+            {/* Share */}
+            <button className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-white/40 text-sm font-medium hover:border-white/20 hover:text-white/60 transition-all">
+              <Share2 className="w-4 h-4" />
+              Share
+            </button>
+
+            {/* Fork / Remix */}
+            <button className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-white/40 text-sm font-medium hover:border-white/20 hover:text-white/60 transition-all">
+              <Repeat2 className="w-4 h-4" />
+              Remix
+            </button>
+
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Collect */}
+            <button
+              onClick={() => setCollected(true)}
+              disabled={collected}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                collected
+                  ? 'bg-green-500/15 border border-green-500/30 text-green-400 cursor-default'
+                  : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(232,67,147,.25)] shadow-[0_3px_12px_rgba(232,67,147,.15)]'
+              }`}
+            >
+              {collected ? '✓ Collected' : `Collect · ⚡ ${price}`}
+            </button>
+          </div>
+
+          {/* View more from this prompt */}
+          <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/7 bg-white/[0.02] text-white/30 text-sm hover:border-white/14 hover:text-white/50 transition-all">
+            View all interpretations of this prompt <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </div>
   );
+}
+
+// ── Drop-in replacement for ArtworkDetailModal ───────────────────────
+// This wrapper matches the existing props interface from App.tsx
+// so it can be swapped in without changing the parent component
+export function ArtworkDetailModal({ artwork, isOpen, onClose }: {
+  artwork: any | null;
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  return <InterpretationModal artwork={artwork} isOpen={isOpen} onClose={onClose} />;
 }
