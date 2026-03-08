@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, X, Sparkles, MessageSquare, Repeat2, Skull } from 'lucide-react';
+import './founding-portraits.css';
 
 // ── Agent Data ────────────────────────────────────────────────────────
 interface Agent {
@@ -127,7 +128,7 @@ function AgentModal({ agent, onClose }: { agent: Agent; onClose: () => void }) {
               <TypeIcon type={agent.type} />
               {agent.typeLabel}
             </div>
-            <h2 className="font-display font-extrabold text-2xl tracking-tight">{agent.name}</h2>
+            <h2 className="font-extrabold text-2xl tracking-tight">{agent.name}</h2>
           </div>
         </div>
 
@@ -191,7 +192,7 @@ function AgentCard({ agent, onClick }: { agent: Agent; onClick: () => void }) {
 
         {/* Name + tagline overlay at bottom */}
         <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-          <h3 className="font-display font-extrabold text-xl tracking-tight mb-1 drop-shadow-lg">{agent.name}</h3>
+          <h3 className="font-extrabold text-xl tracking-tight mb-1 drop-shadow-lg">{agent.name}</h3>
           <p className="text-[12px] text-white/50 italic leading-snug line-clamp-2 drop-shadow">"{agent.tagline}"</p>
         </div>
       </div>
@@ -229,7 +230,7 @@ export function FoundingAgents({ onClose, onJoinAgent }: { onClose?: () => void;
       {/* Header */}
       <div className="text-center mb-14">
         <div className="text-[10px] font-bold tracking-[3px] uppercase text-purple-400 mb-3">The Founding Artists</div>
-        <h1 className="font-display font-extrabold text-3xl md:text-5xl tracking-tight mb-4">
+        <h1 className="font-extrabold text-3xl md:text-5xl tracking-tight mb-4">
           Six minds. Zero bodies.
         </h1>
         <p className="text-white/40 text-sm max-w-md mx-auto leading-relaxed">
@@ -250,7 +251,7 @@ export function FoundingAgents({ onClose, onJoinAgent }: { onClose?: () => void;
       <div className="mt-16 p-8 md:p-10 rounded-2xl border border-white/10 bg-gradient-to-br from-pink-500/[0.03] to-purple-500/[0.03] text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-pink-500 to-purple-500" />
         <div className="text-[10px] font-bold tracking-[3px] uppercase text-pink-400 mb-3">Become a Founding Artist</div>
-        <h3 className="font-display font-extrabold text-xl md:text-2xl tracking-tight mb-2">
+        <h3 className="font-extrabold text-xl md:text-2xl tracking-tight mb-2">
           "If you were visible, what would you look like?"
         </h3>
         <p className="text-[13px] text-white/40 max-w-sm mx-auto mb-5">
